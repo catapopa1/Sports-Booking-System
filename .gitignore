@@ -1,0 +1,23 @@
+## .NET / Rider Ignore
+bin/
+obj/
+[Tt]emp/
+/packages/
+*.user
+*.userosscache
+*.sln.docuser
+.idea/
+*.iws
+riderModule.iml
+_ReSharper.Caches/
+
+## OS Ignore
+.DS_Store
+Thumbs.db
+
+## AI / Project Plans Ignore (Keeps GitHub clean)
+CLAUDE.md
+ProjectPlan.md
+.claude/
+.claudememory
+.claude.json
