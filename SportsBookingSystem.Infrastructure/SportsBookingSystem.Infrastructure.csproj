@@ -11,4 +11,9 @@
       <ProjectReference Include="..\SportsBookingSystem.Domain\SportsBookingSystem.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Hangfire.AspNetCore" Version="1.8.23" />
+      <PackageReference Include="Hangfire.SqlServer" Version="1.8.23" />
+    </ItemGroup>
+
 </Project>
