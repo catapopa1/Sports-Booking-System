@@ -1,7 +1,11 @@
 using Microsoft.OpenApi;
-//using Microsoft.OpenApi.Models;
+using SportsBookingSystem.Application;
+using SportsBookingSystem.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -22,7 +26,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "SportsBookingSystem API v1");
-        options.RoutePrefix = string.Empty; // Swagger loads at root: https://localhost:PORT/
+        options.RoutePrefix = string.Empty; 
     });
 }
 
