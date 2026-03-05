@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Infrastructure.Persistence;
+using SportsBookingSystem.Infrastructure.Services;
 
 namespace SportsBookingSystem.Infrastructure;
 
@@ -18,6 +19,8 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext>(sp =>
             sp.GetRequiredService<AppDbContext>());
 
+        services.AddScoped<ITokenService,TokenService>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
         return services;
     }
 }
