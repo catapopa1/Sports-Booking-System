@@ -15,7 +15,6 @@ _ReSharper.Caches/
 .DS_Store
 Thumbs.db
 
-## AI / Project Plans Ignore (Keeps GitHub clean)
 CLAUDE.md
 ProjectPlan.md
 .claude/
