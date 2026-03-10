@@ -1,3 +1,4 @@
+using System.Diagnostics.Contracts;
 using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Domain.Entities;
@@ -19,5 +20,5 @@ public class AppDbContext: DbContext,IApplicationDbContext
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<BookingInvite> BookingInvites => Set<BookingInvite>();
     public DbSet<Notification> Notifications => Set<Notification>();
-    
+    public DbSet<Friendship> Friendships => Set<Friendship>();
 }

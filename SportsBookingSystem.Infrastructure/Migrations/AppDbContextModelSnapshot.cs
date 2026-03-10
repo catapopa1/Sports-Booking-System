@@ -124,6 +124,38 @@ namespace SportsBookingSystem.Infrastructure.Migrations
                     b.ToTable("Fields", (string)null);
                 });
 
+            modelBuilder.Entity("SportsBookingSystem.Domain.Entities.Friendship", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AddresseeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("RequesterId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddresseeId");
+
+                    b.HasIndex("RequesterId", "AddresseeId")
+                        .IsUnique();
+
+                    b.ToTable("Friendships", (string)null);
+                });
+
             modelBuilder.Entity("SportsBookingSystem.Domain.Entities.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -201,6 +233,10 @@ namespace SportsBookingSystem.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Bio")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
@@ -218,6 +254,10 @@ namespace SportsBookingSystem.Infrastructure.Migrations
 
                     b.Property<string>("PasswordHash")
                         .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("ProfilePictureUrl")
                         .HasMaxLength(512)
                         .HasColumnType("nvarchar(512)");
 
@@ -281,6 +321,25 @@ namespace SportsBookingSystem.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Park");
+                });
+
+            modelBuilder.Entity("SportsBookingSystem.Domain.Entities.Friendship", b =>
+                {
+                    b.HasOne("SportsBookingSystem.Domain.Entities.User", "Addressee")
+                        .WithMany()
+                        .HasForeignKey("AddresseeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("SportsBookingSystem.Domain.Entities.User", "Requester")
+                        .WithMany()
+                        .HasForeignKey("RequesterId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Addressee");
+
+                    b.Navigation("Requester");
                 });
 
             modelBuilder.Entity("SportsBookingSystem.Domain.Entities.Notification", b =>

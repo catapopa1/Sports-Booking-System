@@ -12,7 +12,8 @@ public interface IApplicationDbContext
     DbSet<Booking> Bookings { get; }
     DbSet<BookingInvite> BookingInvites { get; }
     DbSet<Notification> Notifications { get; }
-
+    
+    DbSet<Friendship>  Friendships { get; }
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 
 }

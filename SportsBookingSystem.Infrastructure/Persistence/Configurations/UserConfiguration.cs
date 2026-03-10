@@ -17,6 +17,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.LastName).HasMaxLength(100).IsRequired();
         builder.Property(u => u.PasswordHash).HasMaxLength(512).IsRequired();
 
+        builder.Property(u => u.Bio).HasMaxLength(500);
+        builder.Property(u=>u.ProfilePictureUrl).HasMaxLength(512);
+        
         builder.Property(u => u.Role)
             .HasConversion<string>()
             .HasMaxLength(20)
