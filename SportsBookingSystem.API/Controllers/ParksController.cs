@@ -41,8 +41,7 @@ public class ParksController : BaseController
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreatePark(CreateParkCommand command,CancellationToken ct)
     {
-        var result = await _createPark.HandleAsync(command, ct);
-
+        var result = await _createPark.HandleAsync(command,ct);
         return result.Match(
             id => CreatedAtAction(nameof(GetParkById), new { id }, new { id }),
             Problem);
