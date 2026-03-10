@@ -43,7 +43,7 @@ public class CreateParkHandler : ICommandHandler<CreateParkCommand,ErrorOr<int>>
             ManagerId = command.ManagerId
         };
         
-        _dbContext.Parks.Add(park);
+        await _dbContext.Parks.AddAsync(park,ct);
         await _dbContext.SaveChangesAsync(ct);
         
         return park.Id;

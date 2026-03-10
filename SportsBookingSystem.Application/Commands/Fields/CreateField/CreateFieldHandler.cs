@@ -39,7 +39,7 @@ public class CreateFieldHandler : ICommandHandler<CreateFieldCommand,ErrorOr<int
             BaseHourlyPrice = command.BaseHourlyPrice
         };
         
-        _dbContext.Fields.Add(field);
+        await _dbContext.Fields.AddAsync(field,ct);
         await _dbContext.SaveChangesAsync(ct);
         
         return field.Id;
