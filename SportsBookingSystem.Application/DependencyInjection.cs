@@ -2,6 +2,10 @@ using ErrorOr;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using SportsBookingSystem.Application.Commands.Auth.Register;
+using SportsBookingSystem.Application.Commands.Bookings.ApproveBooking;
+using SportsBookingSystem.Application.Commands.Bookings.CancelBooking;
+using SportsBookingSystem.Application.Commands.Bookings.CreateBooking;
+using SportsBookingSystem.Application.Commands.Bookings.RespondToInvite;
 using SportsBookingSystem.Application.Commands.Fields.CreateField;
 using SportsBookingSystem.Application.Commands.Friendships.RemoveFriend;
 using SportsBookingSystem.Application.Commands.Friendships.RespondToFriendRequestCommand;
@@ -15,6 +19,10 @@ using SportsBookingSystem.Application.Queries.Fields.GetFieldById;
 using SportsBookingSystem.Application.Queries.Friendships.GetMyFriends;
 using SportsBookingSystem.Application.Queries.Friendships.GetPendingRequests;
 using SportsBookingSystem.Application.Queries.Friendships.GetSentRequests;
+using SportsBookingSystem.Application.Queries.Bookings.GetBookingById;
+using SportsBookingSystem.Application.Queries.Bookings.GetMyBookings;
+using SportsBookingSystem.Application.Queries.Bookings.GetMyInvites;
+using SportsBookingSystem.Application.Queries.Bookings.GetPendingApprovals;
 using SportsBookingSystem.Application.Queries.Parks.GetAllParks;
 using SportsBookingSystem.Application.Queries.Parks.GetFieldsByPark;
 using SportsBookingSystem.Application.Queries.Parks.GetParkById;
@@ -56,6 +64,17 @@ public static class DependencyInjection
         // Users
         services.AddScoped<IQueryHandler<SearchUsersQuery, ErrorOr<List<UserSearchResultDto>>>, SearchUsersHandler>();
         services.AddScoped<IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>>, GetUserProfileHandler>();
+
+        // Bookings - Commands
+        services.AddScoped<ICommandHandler<CreateBookingCommand, ErrorOr<int>>, CreateBookingHandler>();
+        services.AddScoped<ICommandHandler<RespondToInviteCommand, ErrorOr<Updated>>, RespondToInviteHandler>();
+        services.AddScoped<ICommandHandler<ApproveBookingCommand, ErrorOr<Updated>>, ApproveBookingHandler>();
+        services.AddScoped<ICommandHandler<CancelBookingCommand, ErrorOr<Updated>>, CancelBookingHandler>();
+        services.AddScoped<IValidator<CreateBookingCommand>, CreateBookingValidator>();
+        services.AddScoped<IQueryHandler<GetBookingByIdQuery, ErrorOr<BookingDto>>, GetBookingByIdHandler>();
+        services.AddScoped<IQueryHandler<GetMyBookingsQuery, ErrorOr<List<BookingSummaryDto>>>, GetMyBookingsHandler>();
+        services.AddScoped<IQueryHandler<GetMyInvitesQuery, ErrorOr<List<InviteNotificationDto>>>, GetMyInvitesHandler>();
+        services.AddScoped<IQueryHandler<GetPendingApprovalsQuery, ErrorOr<List<BookingSummaryDto>>>, GetPendingApprovalsHandler>();
 
         return services;
     }
