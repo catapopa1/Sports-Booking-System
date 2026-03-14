@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Domain.Enums;
+using SportsBookingSystem.Domain.Events;
 
 namespace SportsBookingSystem.Application.Commands.Bookings.CancelBooking;
 
@@ -33,6 +34,8 @@ public class CancelBookingHandler : ICommandHandler<CancelBookingCommand, ErrorO
 
         booking.Status = BookingStatus.Cancelled;
 
+        booking.RaiseDomainEvent(new BookingCancelledEvent(booking.Id));
+        
         await _dbContext.SaveChangesAsync(ct);
         return Result.Updated;
     }

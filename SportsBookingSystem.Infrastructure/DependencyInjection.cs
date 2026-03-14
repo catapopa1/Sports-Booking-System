@@ -1,7 +1,9 @@
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SportsBookingSystem.Application.Interfaces;
+using SportsBookingSystem.Infrastructure.Jobs;
 using SportsBookingSystem.Infrastructure.Persistence;
 using SportsBookingSystem.Infrastructure.Services;
 
@@ -24,6 +26,16 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
+        services.AddHangfire(c => c                                                                                                                   
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection")));
+        services.AddHangfireServer();
+        
+        services.AddScoped<ProcessOutboxMessagesJob>();
+        
         return services;
     }
 }

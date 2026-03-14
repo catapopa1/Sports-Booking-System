@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Domain.Entities;
-
+using SportsBookingSystem.Domain.Outbox;
 
 namespace SportsBookingSystem.Application.Interfaces;
 
@@ -14,6 +14,7 @@ public interface IApplicationDbContext
     DbSet<Notification> Notifications { get; }
     
     DbSet<Friendship>  Friendships { get; }
+    DbSet<OutboxMessage> OutboxMessages { get; }
     Task<int> SaveChangesAsync(CancellationToken ct = default);
 
 }

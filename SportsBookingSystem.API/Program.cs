@@ -1,11 +1,13 @@
 using System.Text;
 using System.Text.Json.Serialization;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SportsBookingSystem.Application;
 using SportsBookingSystem.Application.Settings;
 using SportsBookingSystem.Infrastructure;
+using SportsBookingSystem.Infrastructure.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -78,8 +80,13 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseHangfireDashboard("/hangfire");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+RecurringJob.AddOrUpdate<ProcessOutboxMessagesJob>(
+    "process-outbox",
+    job => job.ExecuteAsync(),
+    "*/30 * * * * *");
 app.Run();
