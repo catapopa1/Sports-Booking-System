@@ -11,6 +11,10 @@ obj/
 riderModule.iml
 _ReSharper.Caches/
 
+## Logs
+logs/
+*.log
+
 ## OS Ignore
 .DS_Store
 Thumbs.db
