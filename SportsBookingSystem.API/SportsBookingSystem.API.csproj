@@ -25,4 +25,8 @@
       <ProjectReference Include="..\SportsBookingSystem.Infrastructure\SportsBookingSystem.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="logs\" />
+    </ItemGroup>
+
 </Project>

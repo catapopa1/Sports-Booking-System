@@ -4,12 +4,24 @@ using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Serilog;
+using Serilog.Events;
+using SportsBookingSystem.API.Middleware;
 using SportsBookingSystem.Application;
 using SportsBookingSystem.Application.Settings;
 using SportsBookingSystem.Infrastructure;
 using SportsBookingSystem.Infrastructure.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) =>
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext()
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Database.Command", LogEventLevel.Warning)
+        .MinimumLevel.Override("Microsoft.EntityFrameworkCore.Infrastructure", LogEventLevel.Warning)
+        .MinimumLevel.Override("Hangfire", LogEventLevel.Warning));
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -70,6 +82,10 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalExceptionMiddleware>(); 
+
+app.UseSerilogRequestLogging(); 
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -85,8 +101,10 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 RecurringJob.AddOrUpdate<ProcessOutboxMessagesJob>(
     "process-outbox",
     job => job.ExecuteAsync(),
     "*/30 * * * * *");
+
 app.Run();

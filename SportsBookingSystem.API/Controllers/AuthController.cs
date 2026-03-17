@@ -11,7 +11,6 @@ public class AuthController : BaseController
 {
     private readonly ICommandHandler<RegisterCommand, ErrorOr<int>> _register;
     private readonly IQueryHandler<LoginQuery, ErrorOr<LoginResult>> _login;
-
     public AuthController(ICommandHandler<RegisterCommand, ErrorOr<int>> register, IQueryHandler<LoginQuery, ErrorOr<LoginResult>> login)
     {
         _register = register;
@@ -28,8 +27,7 @@ public class AuthController : BaseController
             Problem
         );
     }
-
-
+    
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginQuery query, CancellationToken ct)
     {
@@ -39,7 +37,5 @@ public class AuthController : BaseController
             loginResult => Ok(loginResult),
             Problem
         );
-        
-        
     }
 }
