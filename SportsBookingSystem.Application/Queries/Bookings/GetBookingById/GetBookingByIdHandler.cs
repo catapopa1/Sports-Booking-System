@@ -9,10 +9,11 @@ namespace SportsBookingSystem.Application.Queries.Bookings.GetBookingById;
 public class GetBookingByIdHandler : IQueryHandler<GetBookingByIdQuery, ErrorOr<BookingDto>>
 {
     private readonly IApplicationDbContext _dbContext;
-
-    public GetBookingByIdHandler(IApplicationDbContext dbContext)
+    private readonly ICurrentUserService _currentUser;
+    public GetBookingByIdHandler(IApplicationDbContext dbContext,ICurrentUserService currentUser)
     {
         _dbContext = dbContext;
+        _currentUser = currentUser;
     }
 
     public async Task<ErrorOr<BookingDto>> HandleAsync(GetBookingByIdQuery query, CancellationToken ct = default)
@@ -27,6 +28,14 @@ public class GetBookingByIdHandler : IQueryHandler<GetBookingByIdQuery, ErrorOr<
 
         if (booking is null)
             return Error.NotFound("Booking.NotFound", "Booking not found.");
+        
+        var userId = _currentUser.UserId;
+        var isOrganizer   = booking.OrganizerId == userId;
+        var isInvitee     = booking.Invites.Any(i => i.PlayerId == userId);
+        var isParkManager = booking.Field.Park.ManagerId == userId;
+
+        if (!isOrganizer && !isInvitee && !isParkManager)
+            return Error.Forbidden("Booking.Forbidden", "You do not have access to this booking.");
 
         return new BookingDto(
             booking.Id,

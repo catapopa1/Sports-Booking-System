@@ -32,6 +32,7 @@ public class UsersController : BaseController
 
 
     [HttpGet("{id}")]
+    [Authorize]
     public async Task<IActionResult> GetUserProfile(int id, CancellationToken ct)
     {
         var result = await _getUserProfileHandler.HandleAsync(new GetUserProfileQuery(id), ct);

@@ -99,6 +99,7 @@ if (app.Environment.IsDevelopment())
 app.UseHangfireDashboard("/hangfire");
 app.UseHttpsRedirection();
 app.UseAuthentication();
+app.UseMiddleware<UserIdMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 
