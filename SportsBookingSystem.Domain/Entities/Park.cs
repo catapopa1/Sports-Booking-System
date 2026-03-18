@@ -2,7 +2,7 @@ using SportsBookingSystem.Domain.Common;
 
 namespace SportsBookingSystem.Domain.Entities;
 
-public class Park : BaseEntity
+public class Park : BaseEntity,ISoftDeletable
 {
     public string Name { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
@@ -11,4 +11,7 @@ public class Park : BaseEntity
     public User Manager { get; set; } = null!;
 
     public ICollection<Field> Fields { get; set; } = [];
+    
+    public bool IsDeleted { get; set; }
+    public DateTimeOffset? DeletedAt { get; set; }
 }

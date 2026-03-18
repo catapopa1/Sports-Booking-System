@@ -28,5 +28,7 @@ public class FieldConfiguration : IEntityTypeConfiguration<Field>
             .WithMany(p => p.Fields)
             .HasForeignKey(f => f.ParkId)
             .OnDelete(DeleteBehavior.Cascade);
+        
+        builder.HasQueryFilter(f => !f.IsDeleted);
     }
 }

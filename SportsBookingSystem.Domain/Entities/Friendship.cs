@@ -12,6 +12,4 @@ public class Friendship : BaseEntity
     public User Addressee { get; set; } = null!;
     
     public FriendshipStatus Status { get; set; }
-    public DateTime CreatedAt { get; set; }
-    
 }

@@ -21,5 +21,7 @@ public class ParkConfiguration: IEntityTypeConfiguration<Park>
             .WithMany()                      
             .HasForeignKey(p => p.ManagerId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder.HasQueryFilter(p => !p.IsDeleted);
     }
 }

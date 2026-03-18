@@ -29,12 +29,35 @@ public class AppDbContext: DbContext,IApplicationDbContext
 
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {
-        var trackedEntities = ChangeTracker.Entries<BaseEntity>().ToList();
-
-        List<IDomainEvent> domainEvents = new List<IDomainEvent>();
+        var now =  DateTimeOffset.UtcNow;
         
-        foreach (var entity in trackedEntities)
-            domainEvents.AddRange(entity.Entity.DomainEvents.ToList());
+        var trackedEntities = ChangeTracker.Entries<BaseEntity>().ToList();
+        List<IDomainEvent> domainEvents = new List<IDomainEvent>();
+
+        foreach (var entry in trackedEntities)
+        {
+            domainEvents.AddRange(entry.Entity.DomainEvents.ToList());
+            
+            if (entry.State == EntityState.Added)
+            {
+                entry.Entity.CreatedAt = now;
+                entry.Entity.UpdatedAt = now;
+            }
+            else if (entry.State == EntityState.Modified)
+            {
+                entry.Entity.UpdatedAt = now;
+            }
+        }
+        
+        foreach (var entry in ChangeTracker.Entries<ISoftDeletable>())
+        {
+            if (entry.State == EntityState.Deleted)
+            {
+                entry.State = EntityState.Modified;
+                entry.Entity.IsDeleted = true;
+                entry.Entity.DeletedAt = now;
+            }
+        }
 
         foreach (var domainEvent in domainEvents)
         {
