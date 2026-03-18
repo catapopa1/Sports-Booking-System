@@ -26,6 +26,7 @@ using SportsBookingSystem.Application.Queries.Bookings.GetPendingApprovals;
 using SportsBookingSystem.Application.Queries.Parks.GetAllParks;
 using SportsBookingSystem.Application.Queries.Parks.GetFieldsByPark;
 using SportsBookingSystem.Application.Queries.Parks.GetParkById;
+using SportsBookingSystem.Application.Queries.Parks.GetParkStats;
 using SportsBookingSystem.Application.Queries.Users.GetUserProfile;
 using SportsBookingSystem.Application.Queries.Users.SearchUsers;
 
@@ -65,7 +66,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<SearchUsersQuery, ErrorOr<List<UserSearchResultDto>>>, SearchUsersHandler>();
         services.AddScoped<IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>>, GetUserProfileHandler>();
 
-        // Bookings - Commands
+        // Bookings 
         services.AddScoped<ICommandHandler<CreateBookingCommand, ErrorOr<int>>, CreateBookingHandler>();
         services.AddScoped<ICommandHandler<RespondToInviteCommand, ErrorOr<Updated>>, RespondToInviteHandler>();
         services.AddScoped<ICommandHandler<ApproveBookingCommand, ErrorOr<Updated>>, ApproveBookingHandler>();
@@ -75,6 +76,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetMyBookingsQuery, ErrorOr<List<BookingSummaryDto>>>, GetMyBookingsHandler>();
         services.AddScoped<IQueryHandler<GetMyInvitesQuery, ErrorOr<List<InviteNotificationDto>>>, GetMyInvitesHandler>();
         services.AddScoped<IQueryHandler<GetPendingApprovalsQuery, ErrorOr<List<BookingSummaryDto>>>, GetPendingApprovalsHandler>();
+        services.AddScoped<IQueryHandler<GetParkStatsQuery, ErrorOr<ParkStatsDto>>, GetParkStatsQueryHandler>();
 
         return services;
     }

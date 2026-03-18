@@ -5,10 +5,13 @@ using SportsBookingSystem.API.Requests;
 using SportsBookingSystem.Application.Commands.Fields.CreateField;
 using SportsBookingSystem.Application.Commands.Parks.CreatePark;
 using SportsBookingSystem.Application.Common;
+using SportsBookingSystem.Application.Queries.Dtos;
 using SportsBookingSystem.Application.Queries.Fields.GetFieldById;
 using SportsBookingSystem.Application.Queries.Parks.GetAllParks;
 using SportsBookingSystem.Application.Queries.Parks.GetFieldsByPark;
 using SportsBookingSystem.Application.Queries.Parks.GetParkById;
+using SportsBookingSystem.Application.Queries.Parks.GetParkStats;
+
 namespace SportsBookingSystem.API.Controllers;
 
 [Route("api/[controller]")]
@@ -21,21 +24,24 @@ public class ParksController : BaseController
     private readonly IQueryHandler<GetAllParksQuery, ErrorOr<List<ParkSummaryDto>>> _getAllParks;
     private readonly IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDto>> _getParkById;
     private readonly IQueryHandler<GetFieldsByParkQuery, ErrorOr<List<FieldDto>>> _getFieldsByPark;
+    private readonly IQueryHandler<GetParkStatsQuery, ErrorOr<ParkStatsDto>> _getParkStatsHandler;
 
     public ParksController(
         ICommandHandler<CreateParkCommand, ErrorOr<int>> createPark,
         ICommandHandler<CreateFieldCommand, ErrorOr<int>> createField,
         IQueryHandler<GetAllParksQuery, ErrorOr<List<ParkSummaryDto>>> getAllParks,
         IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDto>> getParkById,
-        IQueryHandler<GetFieldsByParkQuery, ErrorOr<List<FieldDto>>> getFieldsByPark
-        )
+        IQueryHandler<GetFieldsByParkQuery, ErrorOr<List<FieldDto>>> getFieldsByPark,
+        IQueryHandler<GetParkStatsQuery, ErrorOr<ParkStatsDto>> getParkStatsHandler)
     {
         _createPark = createPark;
         _createField = createField;
         _getAllParks = getAllParks;
         _getParkById = getParkById;
         _getFieldsByPark = getFieldsByPark;
+        _getParkStatsHandler = getParkStatsHandler;
     }
+    
 
     [HttpPost]
     [Authorize(Roles = "Admin")]
@@ -78,6 +84,14 @@ public class ParksController : BaseController
     public async Task<IActionResult> GetFieldsByPark(int id, CancellationToken ct)
     {
         var result = await _getFieldsByPark.HandleAsync(new GetFieldsByParkQuery(id), ct);
+        return result.Match(Ok, Problem);
+    }
+    
+    [HttpGet("{id}/stats")]
+    [Authorize(Roles = "ParkManager,Admin")]
+    public async Task<IActionResult> GetParkStats(int id, CancellationToken ct)
+    {
+        var result = await _getParkStatsHandler.HandleAsync(new GetParkStatsQuery(id), ct);
         return result.Match(Ok, Problem);
     }
 }
