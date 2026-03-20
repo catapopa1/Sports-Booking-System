@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using SportsBookingSystem.API.Requests;
 using SportsBookingSystem.Application.Commands.Fields.CreateField;
 using SportsBookingSystem.Application.Commands.Parks.CreatePark;
+using SportsBookingSystem.Application.Commands.Parks.DeletePark;
+using SportsBookingSystem.Application.Commands.Parks.UpdatePark;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Queries.Dtos;
 using SportsBookingSystem.Application.Queries.Fields.GetFieldById;
@@ -20,6 +22,8 @@ public class ParksController : BaseController
 {
     private readonly ICommandHandler<CreateParkCommand, ErrorOr<int>> _createPark;
     private readonly ICommandHandler<CreateFieldCommand, ErrorOr<int>> _createField;
+    private readonly ICommandHandler<UpdateParkCommand,ErrorOr<Updated>> _updatePark;
+    private readonly ICommandHandler<DeleteParkCommand, ErrorOr<Deleted>> _deletePark;
 
     private readonly IQueryHandler<GetAllParksQuery, ErrorOr<List<ParkSummaryDto>>> _getAllParks;
     private readonly IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDto>> _getParkById;
@@ -29,6 +33,8 @@ public class ParksController : BaseController
     public ParksController(
         ICommandHandler<CreateParkCommand, ErrorOr<int>> createPark,
         ICommandHandler<CreateFieldCommand, ErrorOr<int>> createField,
+        ICommandHandler<UpdateParkCommand, ErrorOr<Updated>> updatePark,
+        ICommandHandler<DeleteParkCommand, ErrorOr<Deleted>> deletePark,
         IQueryHandler<GetAllParksQuery, ErrorOr<List<ParkSummaryDto>>> getAllParks,
         IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDto>> getParkById,
         IQueryHandler<GetFieldsByParkQuery, ErrorOr<List<FieldDto>>> getFieldsByPark,
@@ -36,6 +42,8 @@ public class ParksController : BaseController
     {
         _createPark = createPark;
         _createField = createField;
+        _updatePark = updatePark;
+        _deletePark = deletePark;
         _getAllParks = getAllParks;
         _getParkById = getParkById;
         _getFieldsByPark = getFieldsByPark;
@@ -94,4 +102,23 @@ public class ParksController : BaseController
         var result = await _getParkStatsHandler.HandleAsync(new GetParkStatsQuery(id), ct);
         return result.Match(Ok, Problem);
     }
+
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> UpdatePark(int id, [FromBody] UpdateParkCommand command, CancellationToken ct)
+    {
+        var result = await _updatePark.HandleAsync(command with { ParkId = id }, ct);
+        return result.Match(_ => Ok(), Problem);
+    }
+
+    
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeletePark(int id, CancellationToken ct)
+    {
+        var result = await _deletePark.HandleAsync(new DeleteParkCommand(id), ct);
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+
 }

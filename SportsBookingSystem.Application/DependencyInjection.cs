@@ -7,6 +7,8 @@ using SportsBookingSystem.Application.Commands.Bookings.CancelBooking;
 using SportsBookingSystem.Application.Commands.Bookings.CreateBooking;
 using SportsBookingSystem.Application.Commands.Bookings.RespondToInvite;
 using SportsBookingSystem.Application.Commands.Fields.CreateField;
+using SportsBookingSystem.Application.Commands.Fields.DeleteField;
+using SportsBookingSystem.Application.Commands.Fields.UpdateField;
 using SportsBookingSystem.Application.Commands.Friendships.RemoveFriend;
 using SportsBookingSystem.Application.Commands.Friendships.RespondToFriendRequestCommand;
 using SportsBookingSystem.Application.Commands.Friendships.SendFriendRequest;
@@ -14,6 +16,8 @@ using SportsBookingSystem.Application.Commands.Notifications.MarkAllNotification
 using SportsBookingSystem.Application.Commands.Notifications.MarkNotificationRead;
 using SportsBookingSystem.Application.Commands.Parks;
 using SportsBookingSystem.Application.Commands.Parks.CreatePark;
+using SportsBookingSystem.Application.Commands.Parks.DeletePark;
+using SportsBookingSystem.Application.Commands.Parks.UpdatePark;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Queries.Auth.Login;
 using SportsBookingSystem.Application.Queries.Dtos;
@@ -49,12 +53,17 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetAllParksQuery, ErrorOr<List<ParkSummaryDto>>>, GetAllParksHandler>();
         services.AddScoped<IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDto>>, GetParkByIdHandler>();
         services.AddScoped<IValidator<CreateParkCommand>, CreateParkCommandValidator>();
+        services.AddScoped<ICommandHandler<UpdateParkCommand, ErrorOr<Updated>>, UpdateParkHandler>();
+        services.AddScoped<ICommandHandler<DeleteParkCommand, ErrorOr<Deleted>>, DeleteParkHandler>();
 
         // Fields
         services.AddScoped<ICommandHandler<CreateFieldCommand, ErrorOr<int>>, CreateFieldHandler>();
         services.AddScoped<IQueryHandler<GetFieldsByParkQuery, ErrorOr<List<FieldDto>>>, GetFieldsByParkHandler>();
         services.AddScoped<IQueryHandler<GetFieldByIdQuery, ErrorOr<FieldDto>>, GetFieldByIdHandler>();
         services.AddScoped<IValidator<CreateFieldCommand>, CreateFieldCommandValidator>();
+        services.AddScoped<ICommandHandler<UpdateFieldCommand, ErrorOr<Updated>>, UpdateFieldHandler>();
+        services.AddScoped<ICommandHandler<DeleteFieldCommand, ErrorOr<Deleted>>, DeleteFieldHandler>();
+
 
         // Friendships
         services.AddScoped<ICommandHandler<SendFriendRequestCommand, ErrorOr<int>>, SendFriendRequestHandler>();
