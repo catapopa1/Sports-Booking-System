@@ -10,6 +10,8 @@ using SportsBookingSystem.Application.Commands.Fields.CreateField;
 using SportsBookingSystem.Application.Commands.Friendships.RemoveFriend;
 using SportsBookingSystem.Application.Commands.Friendships.RespondToFriendRequestCommand;
 using SportsBookingSystem.Application.Commands.Friendships.SendFriendRequest;
+using SportsBookingSystem.Application.Commands.Notifications.MarkAllNotificationsRead;
+using SportsBookingSystem.Application.Commands.Notifications.MarkNotificationRead;
 using SportsBookingSystem.Application.Commands.Parks;
 using SportsBookingSystem.Application.Commands.Parks.CreatePark;
 using SportsBookingSystem.Application.Common;
@@ -23,6 +25,7 @@ using SportsBookingSystem.Application.Queries.Bookings.GetBookingById;
 using SportsBookingSystem.Application.Queries.Bookings.GetMyBookings;
 using SportsBookingSystem.Application.Queries.Bookings.GetMyInvites;
 using SportsBookingSystem.Application.Queries.Bookings.GetPendingApprovals;
+using SportsBookingSystem.Application.Queries.Notifications.GetMyNotifications;
 using SportsBookingSystem.Application.Queries.Parks.GetAllParks;
 using SportsBookingSystem.Application.Queries.Parks.GetFieldsByPark;
 using SportsBookingSystem.Application.Queries.Parks.GetParkById;
@@ -77,7 +80,13 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetMyInvitesQuery, ErrorOr<List<InviteNotificationDto>>>, GetMyInvitesHandler>();
         services.AddScoped<IQueryHandler<GetPendingApprovalsQuery, ErrorOr<List<BookingSummaryDto>>>, GetPendingApprovalsHandler>();
         services.AddScoped<IQueryHandler<GetParkStatsQuery, ErrorOr<ParkStatsDto>>, GetParkStatsQueryHandler>();
+        
+        // Notifications
+        services.AddScoped<IQueryHandler<GetMyNotificationsQuery, ErrorOr<PagedResult<NotificationDto>>>, GetMyNotificationsHandler>();
+        services.AddScoped<ICommandHandler<MarkNotificationReadCommand, ErrorOr<Updated>>, MarkNotificationReadHandler>();
+        services.AddScoped<ICommandHandler<MarkAllNotificationsReadCommand, ErrorOr<Updated>>, MarkAllNotificationsReadHandler>();
 
+        
         return services;
     }
 }
