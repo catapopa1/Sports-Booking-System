@@ -35,6 +35,7 @@ public class ProcessOutboxMessagesJob
                         message.Payload),
                     nameof(BookingConfirmedEvent) => JsonSerializer.Deserialize<BookingConfirmedEvent>(message.Payload),
                     nameof(BookingCancelledEvent) => JsonSerializer.Deserialize<BookingCancelledEvent>(message.Payload),
+                    nameof(BookingTimedOutEvent)     => JsonSerializer.Deserialize<BookingTimedOutEvent>(message.Payload), 
                     _ => null
                 };
 
@@ -63,6 +64,8 @@ public class ProcessOutboxMessagesJob
             await HandleAsync(bookingConfirmed);
         else if (domainEvent is BookingCancelledEvent bookingCancelled)
             await HandleAsync(bookingCancelled);
+        else if (domainEvent is BookingTimedOutEvent bookingTimedOut)
+            await HandleAsync(bookingTimedOut);
     }
 
 
@@ -141,5 +144,30 @@ public class ProcessOutboxMessagesJob
             }
             );
         }
-    } 
+    }
+
+    private async Task HandleAsync(BookingTimedOutEvent e)
+    {
+        var booking = await _dbContext.Bookings
+            .AsNoTracking()
+            .Include(b => b.Field)
+            .Include(b => b.Invites)
+            .FirstOrDefaultAsync(b => b.Id == e.BookingId);
+        if (booking is null) return;
+
+        var recipientIds = booking.Invites.Select(i => i.PlayerId).ToList();
+        recipientIds.Add(booking.OrganizerId);
+
+        foreach (var recipientId in recipientIds)
+        {
+            await _dbContext.Notifications.AddAsync(new Notification
+            {
+                UserId = recipientId,
+                Title = "Booking Timed Out",
+                Message = $"Booking #{e.BookingId} at '{booking.Field.Name}' was automatically cancelled because not all players responded in time.",
+                IsRead = false,
+                CreatedAt = DateTimeOffset.UtcNow
+            });
+        }
+    }
 }

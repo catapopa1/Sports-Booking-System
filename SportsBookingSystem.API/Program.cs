@@ -108,4 +108,9 @@ RecurringJob.AddOrUpdate<ProcessOutboxMessagesJob>(
     job => job.ExecuteAsync(),
     "*/30 * * * * *");
 
+RecurringJob.AddOrUpdate<TimeoutStaleBookingsJob>(
+    "timeout-stale-bookings",
+    job => job.ExecuteAsync(),
+    Cron.Hourly);
+
 app.Run();

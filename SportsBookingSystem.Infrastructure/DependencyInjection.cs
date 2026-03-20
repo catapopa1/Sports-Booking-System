@@ -36,6 +36,9 @@ public static class DependencyInjection
         
         services.AddScoped<ProcessOutboxMessagesJob>();
         
+        services.AddScoped<TimeoutStaleBookingsJob>();
+
+        
         return services;
     }
 }
