@@ -10,7 +10,7 @@ namespace SportsBookingSystem.Infrastructure.Jobs;
 public class ProcessOutboxMessagesJob
 {
     private readonly IApplicationDbContext _dbContext;
-    
+    private const int MaxRetries = 5;
     
     public ProcessOutboxMessagesJob(IApplicationDbContext dbContext)
     {
@@ -47,8 +47,11 @@ public class ProcessOutboxMessagesJob
             }
             catch (Exception ex)
             {
+                message.RetryCount++;
                 message.Error = ex.Message;
-                message.ProcessedAt = DateTimeOffset.UtcNow;
+
+                if (message.RetryCount >= MaxRetries)
+                    message.ProcessedAt = DateTimeOffset.UtcNow;
             }
         }
         
