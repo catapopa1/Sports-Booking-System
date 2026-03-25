@@ -1,4 +1,6 @@
 using Hangfire;
+using SportsBookingSystem.Application.Interfaces;
+using SportsBookingSystem.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -39,6 +41,8 @@ public static class DependencyInjection
         services.AddScoped<TimeoutStaleBookingsJob>();
 
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        services.AddScoped<INotificationPusher, SignalRNotificationPusher>();
+        services.AddSignalR();
 
         services.AddHealthChecks()
             .AddDbContextCheck<AppDbContext>("database");

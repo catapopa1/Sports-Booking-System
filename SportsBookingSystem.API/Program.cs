@@ -11,6 +11,7 @@ using SportsBookingSystem.API.Middleware;
 using SportsBookingSystem.Application;
 using SportsBookingSystem.Application.Settings;
 using SportsBookingSystem.Infrastructure;
+using SportsBookingSystem.Infrastructure.Hubs;
 using SportsBookingSystem.Infrastructure.Jobs;
 using SportsBookingSystem.Infrastructure.Persistence;
 
@@ -127,6 +128,8 @@ app.UseAuthentication();
 app.UseMiddleware<UserIdMiddleware>();
 app.UseAuthorization();
 app.MapControllers().RequireRateLimiting("global");
+
+app.MapHub<NotificationHub>("/hubs/notifications");      
 
 RecurringJob.AddOrUpdate<ProcessOutboxMessagesJob>(
     "process-outbox",
