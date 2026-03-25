@@ -18,6 +18,7 @@ using SportsBookingSystem.Application.Commands.Parks;
 using SportsBookingSystem.Application.Commands.Parks.CreatePark;
 using SportsBookingSystem.Application.Commands.Parks.DeletePark;
 using SportsBookingSystem.Application.Commands.Parks.UpdatePark;
+using SportsBookingSystem.Application.Commands.Users.ChangePassword;
 using SportsBookingSystem.Application.Commands.Users.UpdateProfile;
 using SportsBookingSystem.Application.Commands.Users.UpdateUserRole;
 using SportsBookingSystem.Application.Commands.Users.UploadAvatar;
@@ -82,6 +83,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>>, GetUserProfileHandler>();
         services.AddScoped<ICommandHandler<UpdateProfileCommand, ErrorOr<Updated>>, UpdateProfileHandler>();
         services.AddScoped<ICommandHandler<UploadAvatarCommand, ErrorOr<string>>, UploadAvatarHandler>();
+        services.AddScoped<ICommandHandler<ChangePasswordCommand, ErrorOr<Updated>>, ChangePasswordHandler>();
 
         // Bookings 
         services.AddScoped<ICommandHandler<CreateBookingCommand, ErrorOr<int>>, CreateBookingHandler>();
