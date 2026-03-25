@@ -7,7 +7,7 @@ using SportsBookingSystem.Domain.Enums;
 
 namespace SportsBookingSystem.Application.Queries.Users.SearchUsers;
 
-public class SearchUsersHandler : IQueryHandler<SearchUsersQuery, ErrorOr<List<UserSearchResultDto>>>
+public class SearchUsersHandler : IQueryHandler<SearchUsersQuery, ErrorOr<PagedResult<UserSearchResultDto>>>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICurrentUserService _currentUser;
@@ -18,7 +18,7 @@ public class SearchUsersHandler : IQueryHandler<SearchUsersQuery, ErrorOr<List<U
         _currentUser = currentUser;
     }
 
-    public async Task<ErrorOr<List<UserSearchResultDto>>> HandleAsync(SearchUsersQuery query, CancellationToken ct)
+    public async Task<ErrorOr<PagedResult<UserSearchResultDto>>> HandleAsync(SearchUsersQuery query, CancellationToken ct)
     {
         var me = _currentUser.UserId;
         var term = query.SearchTerm.ToLower().Trim();
@@ -31,11 +31,19 @@ public class SearchUsersHandler : IQueryHandler<SearchUsersQuery, ErrorOr<List<U
 
         var friendSet = myFriendships.ToHashSet();
 
-        var users = await _context.Users
+        var baseQuery = _context.Users
             .Where(u => u.Id != me &&
                         (u.FirstName.ToLower().Contains(term) ||
                          u.LastName.ToLower().Contains(term) ||
-                         u.Email.ToLower().Contains(term)))
+                         u.Email.ToLower().Contains(term)));
+
+        var totalCount = await baseQuery.CountAsync(ct);
+
+        var items = await baseQuery
+            .OrderBy(u => u.LastName)
+            .ThenBy(u => u.FirstName)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(u => new UserSearchResultDto(
                 u.Id,
                 u.FirstName + " " + u.LastName,
@@ -43,6 +51,6 @@ public class SearchUsersHandler : IQueryHandler<SearchUsersQuery, ErrorOr<List<U
                 friendSet.Contains(u.Id)))
             .ToListAsync(ct);
 
-        return users;
+        return new PagedResult<UserSearchResultDto>(items, totalCount, query.Page, query.PageSize);
     }
 }

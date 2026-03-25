@@ -6,7 +6,7 @@ using SportsBookingSystem.Application.Queries.Dtos;
 
 namespace SportsBookingSystem.Application.Queries.Bookings.GetMyBookings;
 
-public class GetMyBookingsHandler : IQueryHandler<GetMyBookingsQuery, ErrorOr<List<BookingSummaryDto>>>
+public class GetMyBookingsHandler : IQueryHandler<GetMyBookingsQuery, ErrorOr<PagedResult<BookingSummaryDto>>>
 {
     private readonly IApplicationDbContext _dbContext;
     private readonly ICurrentUserService _currentUser;
@@ -17,11 +17,17 @@ public class GetMyBookingsHandler : IQueryHandler<GetMyBookingsQuery, ErrorOr<Li
         _currentUser = currentUser;
     }
 
-    public async Task<ErrorOr<List<BookingSummaryDto>>> HandleAsync(GetMyBookingsQuery query, CancellationToken ct = default)
+    public async Task<ErrorOr<PagedResult<BookingSummaryDto>>> HandleAsync(GetMyBookingsQuery query, CancellationToken ct = default)
     {
-        var bookings = await _dbContext.Bookings
-            .Where(b => b.OrganizerId == _currentUser.UserId)
+        var baseQuery = _dbContext.Bookings
+            .Where(b => b.OrganizerId == _currentUser.UserId);
+
+        var totalCount = await baseQuery.CountAsync(ct);
+
+        var items = await baseQuery
             .OrderByDescending(b => b.StartTime)
+            .Skip((query.Page - 1) * query.PageSize)
+            .Take(query.PageSize)
             .Select(b => new BookingSummaryDto(
                 b.Id,
                 b.Field.Name,
@@ -31,6 +37,6 @@ public class GetMyBookingsHandler : IQueryHandler<GetMyBookingsQuery, ErrorOr<Li
                 b.TotalPrice))
             .ToListAsync(ct);
 
-        return bookings;
+        return new PagedResult<BookingSummaryDto>(items, totalCount, query.Page, query.PageSize);
     }
 }

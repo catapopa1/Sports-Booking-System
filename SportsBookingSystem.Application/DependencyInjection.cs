@@ -78,7 +78,7 @@ public static class DependencyInjection
         services.AddScoped<IQueryHandler<GetSentRequestsQuery, ErrorOr<List<FriendRequestDto>>>, GetSentRequestsHandler>();
 
         // Users
-        services.AddScoped<IQueryHandler<SearchUsersQuery, ErrorOr<List<UserSearchResultDto>>>, SearchUsersHandler>();
+        services.AddScoped<IQueryHandler<SearchUsersQuery, ErrorOr<PagedResult<UserSearchResultDto>>>, SearchUsersHandler>();
         services.AddScoped<IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>>, GetUserProfileHandler>();
         services.AddScoped<ICommandHandler<UpdateProfileCommand, ErrorOr<Updated>>, UpdateProfileHandler>();
         services.AddScoped<ICommandHandler<UploadAvatarCommand, ErrorOr<string>>, UploadAvatarHandler>();
@@ -90,7 +90,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CancelBookingCommand, ErrorOr<Updated>>, CancelBookingHandler>();
         services.AddScoped<IValidator<CreateBookingCommand>, CreateBookingValidator>();
         services.AddScoped<IQueryHandler<GetBookingByIdQuery, ErrorOr<BookingDto>>, GetBookingByIdHandler>();
-        services.AddScoped<IQueryHandler<GetMyBookingsQuery, ErrorOr<List<BookingSummaryDto>>>, GetMyBookingsHandler>();
+        services.AddScoped<IQueryHandler<GetMyBookingsQuery, ErrorOr<PagedResult<BookingSummaryDto>>>, GetMyBookingsHandler>();
         services.AddScoped<IQueryHandler<GetMyInvitesQuery, ErrorOr<List<InviteNotificationDto>>>, GetMyInvitesHandler>();
         services.AddScoped<IQueryHandler<GetPendingApprovalsQuery, ErrorOr<List<BookingSummaryDto>>>, GetPendingApprovalsHandler>();
         services.AddScoped<IQueryHandler<GetParkStatsQuery, ErrorOr<ParkStatsDto>>, GetParkStatsQueryHandler>();

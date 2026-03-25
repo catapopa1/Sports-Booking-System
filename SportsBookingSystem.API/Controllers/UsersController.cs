@@ -16,14 +16,14 @@ public class UsersController : BaseController
 {
     private readonly ICurrentUserService _currentUser;
     
-    private readonly IQueryHandler<SearchUsersQuery, ErrorOr<List<UserSearchResultDto>>> _searchUsersQueryHandler;
+    private readonly IQueryHandler<SearchUsersQuery, ErrorOr<PagedResult<UserSearchResultDto>>> _searchUsersQueryHandler;
     private readonly IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>> _getUserProfileHandler;
     
     private readonly ICommandHandler<UploadAvatarCommand,ErrorOr<string>> _uploadAvatarHandler;
     private readonly ICommandHandler<UpdateProfileCommand,ErrorOr<Updated>> _updateProfileHandler;
 
     public UsersController(ICurrentUserService currentUser, 
-        IQueryHandler<SearchUsersQuery, ErrorOr<List<UserSearchResultDto>>> searchUsersQueryHandler, 
+        IQueryHandler<SearchUsersQuery, ErrorOr<PagedResult<UserSearchResultDto>>> searchUsersQueryHandler,
         IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>> getUserProfileHandler, 
         ICommandHandler<UploadAvatarCommand, ErrorOr<string>> uploadAvatarHandler, 
         ICommandHandler<UpdateProfileCommand, ErrorOr<Updated>> updateProfileHandler)
@@ -37,16 +37,16 @@ public class UsersController : BaseController
 
     [HttpGet("search")]
     [Authorize]
-    public async Task<IActionResult> SearchUsers([FromQuery] string q, CancellationToken ct)
+    public async Task<IActionResult> SearchUsers([FromQuery] string q,[FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
-        var result = await _searchUsersQueryHandler.HandleAsync(new SearchUsersQuery(q), ct);
+        var result = await _searchUsersQueryHandler.HandleAsync(new SearchUsersQuery(q,page,pageSize), ct);
         return result.Match(Ok, Problem);
     }
 
 
     [HttpGet("{id}")]
     [Authorize]
-    public async Task<IActionResult> GetUserProfile(int id, CancellationToken ct)
+    public async Task<IActionResult> GetUserProfile(int id, CancellationToken ct = default)
     {
         var result = await _getUserProfileHandler.HandleAsync(new GetUserProfileQuery(id), ct);
         return result.Match(Ok, Problem);
@@ -55,7 +55,7 @@ public class UsersController : BaseController
     
     [HttpGet("me")]
     [Authorize]
-    public async Task<IActionResult> GetMyProfile(CancellationToken ct)
+    public async Task<IActionResult> GetMyProfile(CancellationToken ct = default)
     {
         var result = await _getUserProfileHandler.HandleAsync(new GetUserProfileQuery(_currentUser.UserId), ct);
         return result.Match(Ok, Problem);
@@ -63,7 +63,7 @@ public class UsersController : BaseController
 
     [HttpPut("me")]
     [Authorize]
-    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand command, CancellationToken ct)
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileCommand command, CancellationToken ct = default)
     {
         var result = await _updateProfileHandler.HandleAsync(command, ct);
         return result.Match(_ => Ok(), Problem);
@@ -71,7 +71,7 @@ public class UsersController : BaseController
 
     [HttpPost("me/avatar")]
     [Authorize]
-    public async Task<IActionResult> UploadAvatar(IFormFile file, CancellationToken ct)
+    public async Task<IActionResult> UploadAvatar(IFormFile file, CancellationToken ct = default)
     {
         using var stream = file.OpenReadStream();
         var result = await _uploadAvatarHandler.HandleAsync(new UploadAvatarCommand(stream, file.FileName), ct);
