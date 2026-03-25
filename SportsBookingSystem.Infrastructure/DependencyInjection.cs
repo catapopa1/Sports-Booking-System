@@ -38,6 +38,8 @@ public static class DependencyInjection
         
         services.AddScoped<TimeoutStaleBookingsJob>();
 
+        services.AddScoped<IFileStorageService, LocalFileStorageService>();
+        
         
         return services;
     }
