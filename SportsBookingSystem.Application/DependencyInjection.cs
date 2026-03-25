@@ -19,6 +19,7 @@ using SportsBookingSystem.Application.Commands.Parks.CreatePark;
 using SportsBookingSystem.Application.Commands.Parks.DeletePark;
 using SportsBookingSystem.Application.Commands.Parks.UpdatePark;
 using SportsBookingSystem.Application.Commands.Users.UpdateProfile;
+using SportsBookingSystem.Application.Commands.Users.UpdateUserRole;
 using SportsBookingSystem.Application.Commands.Users.UploadAvatar;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Queries.Auth.Login;
@@ -36,9 +37,9 @@ using SportsBookingSystem.Application.Queries.Parks.GetAllParks;
 using SportsBookingSystem.Application.Queries.Parks.GetFieldsByPark;
 using SportsBookingSystem.Application.Queries.Parks.GetParkById;
 using SportsBookingSystem.Application.Queries.Parks.GetParkStats;
+using SportsBookingSystem.Application.Queries.Users.GetAllUsers;
 using SportsBookingSystem.Application.Queries.Users.GetUserProfile;
 using SportsBookingSystem.Application.Queries.Users.SearchUsers;
-
 namespace SportsBookingSystem.Application;
 
 public static class DependencyInjection
@@ -99,6 +100,9 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<MarkNotificationReadCommand, ErrorOr<Updated>>, MarkNotificationReadHandler>();
         services.AddScoped<ICommandHandler<MarkAllNotificationsReadCommand, ErrorOr<Updated>>, MarkAllNotificationsReadHandler>();
 
+        //Admin
+        services.AddScoped<IQueryHandler<GetAllUsersQuery, ErrorOr<PagedResult<AdminUserDto>>>, GetAllUsersHandler>();
+        services.AddScoped<ICommandHandler<UpdateUserRoleCommand, ErrorOr<Updated>>, UpdateUserRoleHandler>();
         
         return services;
     }
