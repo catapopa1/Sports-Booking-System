@@ -1,5 +1,6 @@
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SportsBookingSystem.Application.Commands.Auth.Register;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Queries.Auth.Login;
@@ -7,6 +8,7 @@ using SportsBookingSystem.Application.Queries.Auth.Login;
 namespace SportsBookingSystem.API.Controllers;
 
 [Route("api/[controller]")]
+[EnableRateLimiting("auth")]
 public class AuthController : BaseController
 {
     private readonly ICommandHandler<RegisterCommand, ErrorOr<int>> _register;

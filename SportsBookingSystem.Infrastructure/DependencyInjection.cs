@@ -39,8 +39,10 @@ public static class DependencyInjection
         services.AddScoped<TimeoutStaleBookingsJob>();
 
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
-        
-        
+
+        services.AddHealthChecks()
+            .AddDbContextCheck<AppDbContext>("database");
+
         return services;
     }
 }

@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
@@ -11,6 +12,7 @@ using SportsBookingSystem.Application;
 using SportsBookingSystem.Application.Settings;
 using SportsBookingSystem.Infrastructure;
 using SportsBookingSystem.Infrastructure.Jobs;
+using SportsBookingSystem.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,7 +82,30 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddFixedWindowLimiter("global", o =>
+    {
+        o.PermitLimit = 100;
+        o.Window = TimeSpan.FromMinutes(1);
+        o.QueueLimit = 0;
+    });
+
+    options.AddFixedWindowLimiter("auth", o =>
+    {
+        o.PermitLimit = 10;
+        o.Window = TimeSpan.FromMinutes(1);
+        o.QueueLimit = 0;
+    });
+});
+
 var app = builder.Build();
+
+app.MapHealthChecks("/health");
+
+app.UseRateLimiter();
 
 app.UseMiddleware<GlobalExceptionMiddleware>(); 
 
@@ -101,7 +126,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseMiddleware<UserIdMiddleware>();
 app.UseAuthorization();
-app.MapControllers();
+app.MapControllers().RequireRateLimiting("global");
 
 RecurringJob.AddOrUpdate<ProcessOutboxMessagesJob>(
     "process-outbox",
