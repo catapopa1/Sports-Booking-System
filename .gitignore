@@ -1,3 +1,6 @@
+## Secrets — never commit
+.env
+
 ## .NET / Rider Ignore
 bin/
 obj/
