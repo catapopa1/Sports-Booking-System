@@ -42,7 +42,7 @@ Admins can create and update parks and fields, soft-delete them (historical book
 
 | Layer | Technology |
 |---|---|
-| Framework | .NET 9, ASP.NET Core Web API |
+| Framework | .NET 10, ASP.NET Core Web API |
 | Architecture | Clean Architecture (API / Application / Domain / Infrastructure) |
 | Database | SQL Server (Docker), Entity Framework Core — Code First |
 | Auth | JWT Bearer tokens, role-based authorization |
