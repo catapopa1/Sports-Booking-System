@@ -1,6 +1,4 @@
 using Hangfire;
-using SportsBookingSystem.Application.Interfaces;
-using SportsBookingSystem.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
