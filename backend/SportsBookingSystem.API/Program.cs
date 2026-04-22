@@ -13,7 +13,6 @@ using SportsBookingSystem.Application.Settings;
 using SportsBookingSystem.Infrastructure;
 using SportsBookingSystem.Infrastructure.Hubs;
 using SportsBookingSystem.Infrastructure.Jobs;
-using SportsBookingSystem.Infrastructure.Persistence;
 
 var builder = WebApplication.CreateBuilder(args);
 
