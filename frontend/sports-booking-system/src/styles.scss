@@ -36,6 +36,16 @@
   --radius-md:  10px;
   --radius-lg:  16px;
   --radius-xl:  24px;
+
+  /* Sidebar — always a dark blue-panel, independent of page theme */
+  --sidebar-bg:          #111e30;
+  --sidebar-bg-hover:    #1a2d45;
+  --sidebar-text:        #D4D4B6;
+  --sidebar-text-muted:  #8a8a72;
+  --sidebar-border:      rgba(255, 255, 255, 0.07);
+  --sidebar-logo:        #ffffff;
+  --sidebar-active-bg:   rgba(214, 172, 45, 0.16);
+  --sidebar-active-text: #D6AC2D;
 }
 
 /* ─── Dark mode ─────────────────────────────────────────────────── */
@@ -70,6 +80,11 @@
   --shadow-sm:      0 1px 3px rgba(0, 0, 0, 0.30);
   --shadow-md:      0 4px 12px rgba(0, 0, 0, 0.40);
   --shadow-lg:      0 10px 30px rgba(0, 0, 0, 0.50);
+
+  /* Sidebar — slightly deeper than page bg so it reads as a distinct panel */
+  --sidebar-bg:          #080e1c;
+  --sidebar-bg-hover:    #0e1828;
+  --sidebar-border:      rgba(255, 255, 255, 0.06);
 }
 
 /* ─── Reset ─────────────────────────────────────────────────────── */
@@ -92,3 +107,53 @@ html, body {
 .mt-2    { margin-top: 0.5rem; }
 .mb-4    { margin-bottom: 1rem; }
 .text-muted { color: var(--text-muted); }
+
+/* ─── PrimeNG alignment ──────────────────────────────────────────── */
+/* Card: PrimeNG dark-mode surface.0 = #0a1628 = same as page bg, so we force our own */
+.p-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-md);
+  color: var(--text-primary);
+}
+
+/* Inputs: force our surface + border so they stand out in both modes */
+.p-inputtext {
+  background: var(--bg-surface);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+
+  &:enabled:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-primary) 20%, transparent);
+  }
+}
+
+/* ─── Auth pages — dark mode ─────────────────────────────────────── */
+.dark .auth-wrapper {
+  background:
+    radial-gradient(ellipse at 70% 5%,  rgba(39, 91, 245, 0.45)  0%, transparent 52%),
+    radial-gradient(ellipse at 10% 90%, rgba(37, 219, 174, 0.22) 0%, transparent 45%),
+    #0a1628;
+}
+
+/* Plain div — no PrimeNG involved, full control */
+.dark .auth-card {
+  background: rgba(15, 31, 56, 0.80);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border-color: rgba(84, 128, 249, 0.30);
+  box-shadow:
+    0 0 0 1px rgba(84, 128, 249, 0.10),
+    0 32px 80px rgba(0, 0, 0, 0.60);
+}
+
+.dark .auth-footer {
+  border-top-color: rgba(84, 128, 249, 0.15);
+}
+
+.dark .auth-body .p-inputtext {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(84, 128, 249, 0.22);
+  color: var(--text-primary);
+}
