@@ -9,7 +9,6 @@ import { LoginRequest, RegisterRequest, LoginResult } from '../models/auth.model
 @Injectable({
   providedIn: 'root',
 })
-
 export class AuthService {
     private readonly http = inject(HttpClient);
     private readonly router = inject(Router);

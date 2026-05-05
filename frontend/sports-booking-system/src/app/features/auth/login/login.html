@@ -1,0 +1,38 @@
+<div class="auth-wrapper">
+  <p-card class="auth-card">
+    <ng-template pTemplate="header">
+      <div class="auth-header">
+        <h1>Welcome back!</h1>
+        <p>Sign in to your account</p>
+      </div>
+    </ng-template>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      @if (error()) {
+        <p-message severity="error" class="w-full mb-4">{{ error() }}</p-message>
+      }
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" pInputText formControlName="email" placeholder="you@example.com" class="w-full" />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <small class="error-hint">Enter a valid email.</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Password</label>
+        <p-password id="password" formControlName="password" placeholder="Password" [feedback]="false" [toggleMask]="true" class="w-full" />
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+          <small class="error-hint">Password is required.</small>
+        }
+      </div>
+
+      <p-button type="submit" label="Sign in" fluid [loading]="loading()" [disabled]="form.invalid" class="submit-btn" />
+    </form>
+
+    <ng-template pTemplate="footer">
+      <p class="auth-footer">Don't have an account? <a routerLink="/register">Register</a></p>
+    </ng-template>
+  </p-card>
+</div>
