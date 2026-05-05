@@ -1,0 +1,77 @@
+<aside class="sidebar" [class.collapsed]="collapsed()">
+
+  <div class="sidebar-top">
+    @if (!collapsed()) {
+      <div class="logo-group">
+        <svg width="34" height="34" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="7" width="24" height="14" rx="2" stroke="#D6AC2D" stroke-width="1.8"/>
+          <line x1="14" y1="7" x2="14" y2="21" stroke="#D6AC2D" stroke-width="1.4"/>
+          <circle cx="14" cy="14" r="4" stroke="#D6AC2D" stroke-width="1.4"/>
+          <circle cx="14" cy="14" r="1.2" fill="#D6AC2D"/>
+        </svg>
+        <span class="logo">Pitchr</span>
+      </div>
+    } @else {
+      <svg class="logo-collapsed" width="30" height="30" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="7" width="24" height="14" rx="2" stroke="#D6AC2D" stroke-width="1.8"/>
+        <line x1="14" y1="7" x2="14" y2="21" stroke="#D6AC2D" stroke-width="1.4"/>
+        <circle cx="14" cy="14" r="4" stroke="#D6AC2D" stroke-width="1.4"/>
+        <circle cx="14" cy="14" r="1.2" fill="#D6AC2D"/>
+      </svg>
+    }
+    <button class="toggle-btn" (click)="toggle()"
+      [pTooltip]="collapsed() ? 'Expand' : ''" tooltipPosition="right">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+        [style.transform]="collapsed() ? 'rotate(180deg)' : 'rotate(0deg)'"
+        style="transition: transform 0.25s ease;">
+        <path d="M10 3L5 8L10 13" stroke="#D4D4B6" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <nav class="nav">
+    @for (item of navItems(); track item.route) {
+      <a class="nav-item"
+        [routerLink]="item.route"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+        [pTooltip]="collapsed() ? item.label : ''"
+        tooltipPosition="right">
+        <i [class]="item.icon"></i>
+        @if (!collapsed()) {
+          <span>{{ item.label }}</span>
+        }
+      </a>
+    }
+  </nav>
+
+  <div class="sidebar-bottom">
+    <button class="action-btn" (click)="theme.toggle()"
+      [pTooltip]="collapsed() ? (theme.darkMode() ? 'Light mode' : 'Dark mode') : ''"
+      tooltipPosition="right">
+      <i [class]="theme.darkMode() ? 'pi pi-sun' : 'pi pi-moon'"></i>
+      @if (!collapsed()) {
+        <span>{{ theme.darkMode() ? 'Light mode' : 'Dark mode' }}</span>
+      }
+    </button>
+
+    <div class="user-row"
+      [pTooltip]="collapsed() ? (auth.user()?.email ?? '') : ''"
+      tooltipPosition="right">
+      <p-avatar [label]="userInitial()" shape="circle" />
+      @if (!collapsed()) {
+        <span class="user-email">{{ auth.user()?.email }}</span>
+      }
+    </div>
+
+    <button class="action-btn logout" (click)="auth.logout()"
+      [pTooltip]="collapsed() ? 'Logout' : ''" tooltipPosition="right">
+      <i class="pi pi-sign-out"></i>
+      @if (!collapsed()) {
+        <span>Logout</span>
+      }
+    </button>
+  </div>
+
+</aside>
