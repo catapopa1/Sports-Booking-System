@@ -84,6 +84,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpdateProfileCommand, ErrorOr<Updated>>, UpdateProfileHandler>();
         services.AddScoped<ICommandHandler<UploadAvatarCommand, ErrorOr<string>>, UploadAvatarHandler>();
         services.AddScoped<ICommandHandler<ChangePasswordCommand, ErrorOr<Updated>>, ChangePasswordHandler>();
+        services.AddScoped<IValidator<ChangePasswordCommand>, ChangePasswordValidator>();
 
         // Bookings 
         services.AddScoped<ICommandHandler<CreateBookingCommand, ErrorOr<int>>, CreateBookingHandler>();
