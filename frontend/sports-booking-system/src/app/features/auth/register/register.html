@@ -1,55 +1,55 @@
 <div class="auth-wrapper">
-  <p-card class="auth-card">
-    <ng-template pTemplate="header">
-      <div class="auth-header">
-        <h1>Create Account</h1>
-        <p>Join to book your outdoor activities in our affiliated Parks</p>
-      </div>
-    </ng-template>
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Create Account</h1>
+      <p>Join to book your outdoor activities in our affiliated Parks</p>
+    </div>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      @if (error()) {
-        <p-message severity="error" class="w-full mb-4">{{ error() }}</p-message>
-      }
+    <div class="auth-body">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        @if (error()) {
+          <p-message severity="error" class="w-full mb-4">{{ error() }}</p-message>
+        }
 
-      <div class="field-row">
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input id="firstName" type="text" pInputText formControlName="firstName" placeholder="John" class="w-full" />
+            @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
+              <small class="error-hint">Required.</small>
+            }
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input id="lastName" type="text" pInputText formControlName="lastName" placeholder="Doe" class="w-full" />
+            @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
+              <small class="error-hint">Required.</small>
+            }
+          </div>
+        </div>
+
         <div class="field">
-          <label for="firstName">First name</label>
-          <input id="firstName" type="text" pInputText formControlName="firstName" placeholder="John" class="w-full" />
-          @if (form.controls.firstName.invalid && form.controls.firstName.touched) {
-            <small class="error-hint">Required.</small>
+          <label for="email">Email</label>
+          <input id="email" type="email" pInputText formControlName="email" placeholder="you@example.com" class="w-full" />
+          @if (form.controls.email.invalid && form.controls.email.touched) {
+            <small class="error-hint">Enter a valid email.</small>
           }
         </div>
+
         <div class="field">
-          <label for="lastName">Last name</label>
-          <input id="lastName" type="text" pInputText formControlName="lastName" placeholder="Doe" class="w-full" />
-          @if (form.controls.lastName.invalid && form.controls.lastName.touched) {
-            <small class="error-hint">Required.</small>
+          <label for="password">Password</label>
+          <p-password id="password" formControlName="password" placeholder="Min. 8 characters" [toggleMask]="true" class="w-full" />
+          @if (form.controls.password.invalid && form.controls.password.touched) {
+            <small class="error-hint">Password must be at least 8 characters.</small>
           }
         </div>
-      </div>
 
-      <div class="field">
-        <label for="email">Email</label>
-        <input id="email" type="email" pInputText formControlName="email" placeholder="you@example.com" class="w-full" />
-        @if (form.controls.email.invalid && form.controls.email.touched) {
-          <small class="error-hint">Enter a valid email.</small>
-        }
-      </div>
+        <p-button type="submit" label="Create account" fluid [loading]="loading()" [disabled]="form.invalid" class="submit-btn" />
+      </form>
+    </div>
 
-      <div class="field">
-        <label for="password">Password</label>
-        <p-password id="password" formControlName="password" placeholder="Min. 8 characters" [toggleMask]="true" class="w-full" />
-        @if (form.controls.password.invalid && form.controls.password.touched) {
-          <small class="error-hint">Password must be at least 8 characters.</small>
-        }
-      </div>
-
-      <p-button type="submit" label="Create account" fluid [loading]="loading()" [disabled]="form.invalid" class="submit-btn" />
-    </form>
-
-    <ng-template pTemplate="footer">
-      <p class="auth-footer">Already have an account? <a routerLink="/login">Sign in</a></p>
-    </ng-template>
-  </p-card>
+    <div class="auth-footer">
+      Already have an account? <a routerLink="/login">Sign in</a>
+    </div>
+  </div>
 </div>
