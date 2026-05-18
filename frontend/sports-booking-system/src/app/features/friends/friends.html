@@ -1,0 +1,265 @@
+<div class="page">
+
+  <header class="page-header">
+    <h1>Friends</h1>
+    <p class="subtitle">Connect with players and manage your network</p>
+  </header>
+
+  <p-tabs [value]="activeTab()" (valueChange)="activeTab.set($any($event))">
+    <p-tablist>
+      <p-tab value="friends">
+        <i class="pi pi-users"></i>
+        <span class="tab-label">My Friends</span>
+      </p-tab>
+      <p-tab value="find">
+        <i class="pi pi-search"></i>
+        <span class="tab-label">Find Friends</span>
+      </p-tab>
+      <p-tab value="pending">
+        <i class="pi pi-inbox"></i>
+        <span class="tab-label">Pending</span>
+        @if (pendingCount() > 0) {
+          <p-badge [value]="pendingCount().toString()" severity="info" />
+        }
+      </p-tab>
+      <p-tab value="sent">
+        <i class="pi pi-send"></i>
+        <span class="tab-label">Sent</span>
+      </p-tab>
+    </p-tablist>
+
+    <p-tabpanels>
+
+      <!-- ─── My Friends ─────────────────────────────────────── -->
+      <p-tabpanel value="friends">
+        @if (loadingFriends()) {
+          <div class="row-list">
+            @for (i of [1,2,3]; track i) {
+              <div class="user-row">
+                <p-skeleton shape="circle" size="3rem" />
+                <div class="info">
+                  <p-skeleton width="40%" height="1rem" />
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (friends().length === 0) {
+          <div class="state-block">
+            <i class="pi pi-users state-icon"></i>
+            <p class="state-message">You don't have any friends yet.</p>
+            <p-button label="Find friends" icon="pi pi-search"
+                      (onClick)="activeTab.set('find')" />
+          </div>
+        } @else {
+          <div class="row-list">
+            @for (friend of friends(); track friend.friendshipId) {
+              <div class="user-row">
+                <div class="avatar">
+                  @if (avatarUrl(friend.profilePictureUrl); as url) {
+                    <img [src]="url" alt="" />
+                  } @else {
+                    <div class="avatar-fallback">{{ initials(friend.fullName) }}</div>
+                  }
+                </div>
+                <div class="info">
+                  <h4 class="name">{{ friend.fullName }}</h4>
+                </div>
+                <div class="actions">
+                  <p-button
+                    icon="pi pi-user-minus"
+                    label="Remove"
+                    severity="secondary"
+                    [text]="true"
+                    [disabled]="actingOn().has(friend.friendshipId)"
+                    (onClick)="removeFriend(friend.friendshipId, friend.fullName)"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </p-tabpanel>
+
+      <!-- ─── Find Friends ───────────────────────────────────── -->
+      <p-tabpanel value="find">
+        <div class="search-wrap">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Search by name or email..."
+            [ngModel]="searchInput()"
+            (ngModelChange)="onSearchInput($event)"
+            class="search-input"
+          />
+        </div>
+
+        @if (searchInput().trim().length < 2) {
+          <div class="state-block">
+            <i class="pi pi-search state-icon"></i>
+            <p class="state-message">Type at least 2 characters to search.</p>
+          </div>
+        } @else if (searching()) {
+          <div class="row-list">
+            @for (i of [1,2,3]; track i) {
+              <div class="user-row">
+                <p-skeleton shape="circle" size="3rem" />
+                <div class="info">
+                  <p-skeleton width="40%" height="1rem" />
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (searchResults().length === 0) {
+          <div class="state-block">
+            <i class="pi pi-search state-icon"></i>
+            <p class="state-message">No users match "{{ searchInput() }}".</p>
+          </div>
+        } @else {
+          <div class="row-list">
+            @for (user of searchResults(); track user.userId) {
+              <div class="user-row">
+                <div class="avatar">
+                  @if (avatarUrl(user.profilePictureUrl); as url) {
+                    <img [src]="url" alt="" />
+                  } @else {
+                    <div class="avatar-fallback">{{ initials(user.fullName) }}</div>
+                  }
+                </div>
+                <div class="info">
+                  <h4 class="name">{{ user.fullName }}</h4>
+                </div>
+                <div class="actions">
+                  @if (user.alreadyFriends) {
+                    <span class="badge badge-success">
+                      <i class="pi pi-check"></i> Friends
+                    </span>
+                  } @else if (sentUserIds().has(user.userId)) {
+                    <span class="badge badge-muted">
+                      <i class="pi pi-clock"></i> Request sent
+                    </span>
+                  } @else {
+                    <p-button
+                      label="Add"
+                      icon="pi pi-user-plus"
+                      [disabled]="actingOn().has(user.userId)"
+                      (onClick)="sendRequest(user.userId)"
+                    />
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </p-tabpanel>
+
+      <!-- ─── Pending (incoming) ─────────────────────────────── -->
+      <p-tabpanel value="pending">
+        @if (loadingPending()) {
+          <div class="row-list">
+            @for (i of [1,2]; track i) {
+              <div class="user-row">
+                <p-skeleton shape="circle" size="3rem" />
+                <div class="info">
+                  <p-skeleton width="40%" height="1rem" />
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (pending().length === 0) {
+          <div class="state-block">
+            <i class="pi pi-inbox state-icon"></i>
+            <p class="state-message">No pending friend requests.</p>
+          </div>
+        } @else {
+          <div class="row-list">
+            @for (req of pending(); track req.friendshipId) {
+              <div class="user-row">
+                <div class="avatar">
+                  @if (avatarUrl(req.profilePictureUrl); as url) {
+                    <img [src]="url" alt="" />
+                  } @else {
+                    <div class="avatar-fallback">{{ initials(req.fullName) }}</div>
+                  }
+                </div>
+                <div class="info">
+                  <h4 class="name">{{ req.fullName }}</h4>
+                  <p class="time">Sent {{ relativeTime(req.createdAt) }}</p>
+                </div>
+                <div class="actions">
+                  <p-button
+                    icon="pi pi-times"
+                    label="Decline"
+                    severity="secondary"
+                    [text]="true"
+                    [disabled]="actingOn().has(req.friendshipId)"
+                    (onClick)="reject(req.friendshipId)"
+                  />
+                  <p-button
+                    icon="pi pi-check"
+                    label="Accept"
+                    [disabled]="actingOn().has(req.friendshipId)"
+                    (onClick)="accept(req.friendshipId)"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </p-tabpanel>
+
+      <!-- ─── Sent ──────────────────────────────────────────── -->
+      <p-tabpanel value="sent">
+        @if (loadingSent()) {
+          <div class="row-list">
+            @for (i of [1,2]; track i) {
+              <div class="user-row">
+                <p-skeleton shape="circle" size="3rem" />
+                <div class="info">
+                  <p-skeleton width="40%" height="1rem" />
+                </div>
+              </div>
+            }
+          </div>
+        } @else if (sent().length === 0) {
+          <div class="state-block">
+            <i class="pi pi-send state-icon"></i>
+            <p class="state-message">No outgoing requests.</p>
+          </div>
+        } @else {
+          <div class="row-list">
+            @for (req of sent(); track req.friendshipId) {
+              <div class="user-row">
+                <div class="avatar">
+                  @if (avatarUrl(req.profilePictureUrl); as url) {
+                    <img [src]="url" alt="" />
+                  } @else {
+                    <div class="avatar-fallback">{{ initials(req.fullName) }}</div>
+                  }
+                </div>
+                <div class="info">
+                  <h4 class="name">{{ req.fullName }}</h4>
+                  <p class="time">Sent {{ relativeTime(req.createdAt) }}</p>
+                </div>
+                <div class="actions">
+                  <p-button
+                    icon="pi pi-times"
+                    label="Cancel"
+                    severity="secondary"
+                    [text]="true"
+                    [disabled]="actingOn().has(req.friendshipId)"
+                    (onClick)="cancelSent(req.friendshipId)"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </p-tabpanel>
+
+    </p-tabpanels>
+  </p-tabs>
+
+  <p-confirmDialog />
+
+</div>

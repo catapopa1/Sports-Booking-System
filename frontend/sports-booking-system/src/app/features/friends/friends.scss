@@ -1,0 +1,209 @@
+.page {
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.page-header {
+  h1 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+}
+
+/* ─── Tab triggers ────────────────────────────────────────────── */
+
+.tab-label {
+  margin-left: 0.5rem;
+}
+
+::ng-deep p-tab {
+  i {
+    font-size: 0.875rem;
+  }
+
+  p-badge {
+    margin-left: 0.5rem;
+  }
+}
+
+/* ─── Search ──────────────────────────────────────────────────── */
+
+.search-wrap {
+  position: relative;
+  margin-bottom: 1rem;
+
+  i {
+    position: absolute;
+    left: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    font-size: 0.875rem;
+  }
+}
+
+.search-input {
+  width: 100%;
+  padding-left: 2.5rem;
+}
+
+/* ─── Row list ────────────────────────────────────────────────── */
+
+.row-list {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.user-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: var(--bg-overlay);
+  }
+}
+
+.avatar {
+  width: 3rem;
+  height: 3rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--bg-overlay);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.avatar-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+}
+
+.name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.time {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0.15rem 0 0;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* ─── Status badges ───────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+
+  i {
+    font-size: 0.7rem;
+  }
+}
+
+.badge-success {
+  background: color-mix(in srgb, var(--color-success) 18%, transparent);
+  color: var(--color-success);
+}
+
+.badge-muted {
+  background: var(--bg-overlay);
+  color: var(--text-muted);
+}
+
+/* ─── Empty / loading state ───────────────────────────────────── */
+
+.state-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3.5rem 1rem;
+  gap: 1rem;
+}
+
+.state-icon {
+  font-size: 2.75rem;
+  color: var(--text-muted);
+}
+
+.state-message {
+  color: var(--text-secondary);
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ─── Mobile ──────────────────────────────────────────────────── */
+
+@media (max-width: 560px) {
+  .user-row {
+    flex-wrap: wrap;
+  }
+
+  .info {
+    flex: 1 1 calc(100% - 4rem);
+  }
+
+  .actions {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+  }
+}

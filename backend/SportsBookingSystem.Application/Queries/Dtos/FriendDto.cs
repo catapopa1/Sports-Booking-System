@@ -1,3 +1,3 @@
 namespace SportsBookingSystem.Application.Queries.Dtos;
 
-public record FriendDto(int UserId, string FullName, string? ProfilePictureUrl);
+public record FriendDto(int FriendshipId, int UserId, string FullName, string? ProfilePictureUrl);

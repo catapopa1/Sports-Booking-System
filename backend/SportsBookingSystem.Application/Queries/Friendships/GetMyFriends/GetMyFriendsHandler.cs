@@ -24,8 +24,8 @@ public class GetMyFriendsHandler : IQueryHandler<GetMyFriendsQuery,ErrorOr<List<
         var friends = await _dbContext.Friendships
             .Where(f => (f.RequesterId == _currentUser.UserId || f.AddresseeId == _currentUser.UserId) && f.Status == FriendshipStatus.Accepted)
             .Select(f => f.RequesterId == _currentUser.UserId
-                ? new FriendDto(f.AddresseeId, f.Addressee.FirstName + " " + f.Addressee.LastName, f.Addressee.ProfilePictureUrl)
-                : new FriendDto(f.RequesterId, f.Requester.FirstName + " " + f.Requester.LastName, f.Requester.ProfilePictureUrl))
+                ? new FriendDto(f.Id, f.AddresseeId, f.Addressee.FirstName + " " + f.Addressee.LastName, f.Addressee.ProfilePictureUrl)
+                : new FriendDto(f.Id, f.RequesterId, f.Requester.FirstName + " " + f.Requester.LastName, f.Requester.ProfilePictureUrl))
             .ToListAsync(ct);
         return friends;
     }
