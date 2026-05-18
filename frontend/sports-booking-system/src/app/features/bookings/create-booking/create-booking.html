@@ -1,0 +1,216 @@
+<div class="page">
+
+  <a routerLink="/parks" class="back-link">
+    <i class="pi pi-arrow-left"></i>
+    <span>Back to parks</span>
+  </a>
+
+  @if (loading()) {
+    <div class="loading-block">
+      <p-skeleton width="60%" height="2rem" styleClass="mb-3" />
+      <p-skeleton width="100%" height="6rem" />
+    </div>
+  } @else if (loadError()) {
+    <div class="state-block">
+      <i class="pi pi-exclamation-triangle state-icon"></i>
+      <p class="state-message">{{ loadError() }}</p>
+      <p-button label="Back to parks" icon="pi pi-arrow-left" routerLink="/parks" />
+    </div>
+  } @else if (field()) {
+
+    <header class="page-header">
+      <h1>Book a field</h1>
+      <p class="subtitle">Pick when you want to play, choose how to play, then invite your friends.</p>
+    </header>
+
+    <!-- ─── Field summary card ────────────────────────────────────── -->
+    <section class="field-card">
+      <div class="sport-badge" [attr.data-sport]="field()!.sportType">
+        <i class="pi pi-circle-fill"></i>
+      </div>
+      <div class="field-info">
+        <h2 class="field-name">{{ field()!.name }}</h2>
+        <p class="field-meta">
+          <span class="field-sport">{{ field()!.sportType }}</span>
+          <span class="dot">·</span>
+          <span>{{ field()!.parkName }}</span>
+        </p>
+      </div>
+      <div class="field-price">
+        <span class="amount">{{ field()!.baseHourlyPrice }}</span>
+        <span class="unit">/ hour</span>
+      </div>
+    </section>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="booking-form">
+
+      <!-- ─── When ──────────────────────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3>When?</h3>
+          <span class="hint">All bookings are 1 hour.</span>
+        </div>
+
+        <div class="when-grid">
+          <div class="date-wrap">
+            <p-datepicker
+              formControlName="date"
+              [inline]="true"
+              [minDate]="minDate"
+              dateFormat="dd M yy"
+            />
+          </div>
+
+          <div class="hour-wrap">
+            <h4 class="sub-label">Start time</h4>
+            <div class="hour-grid">
+              @for (h of hours; track h) {
+                <button
+                  type="button"
+                  class="hour-btn"
+                  [class.selected]="formValue().hour === h"
+                  (click)="pickHour(h)"
+                >
+                  {{ hourLabel(h) }}
+                </button>
+              }
+            </div>
+            @if (formValue().hour === null || formValue().hour === undefined) {
+              <p class="hint">Choose a starting hour</p>
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── Booking type (Basketball only) ────────────────────── -->
+      @if (isBasketball()) {
+        <section class="card">
+          <div class="card-header">
+            <h3>How will you play?</h3>
+            <span class="hint">Half-court games cost 75% of the full price.</span>
+          </div>
+
+          <div class="type-grid">
+            @for (type of availableBookingTypes(); track type) {
+              <label class="type-card" [class.selected]="formValue().bookingType === type">
+                <p-radioButton
+                  [value]="type"
+                  formControlName="bookingType"
+                  [inputId]="'type-' + type"
+                />
+                <div class="type-body">
+                  <span class="type-name">
+                    {{ type === 'FullCourt' ? 'Full court' : 'Half court' }}
+                  </span>
+                  <span class="type-meta">
+                    {{ type === 'FullCourt' ? '10 players (5v5)' : '6 players (3v3)' }}
+                  </span>
+                  <span class="type-price">
+                    @if (type === 'HalfCourt') {
+                      <span class="discount">75% price</span>
+                    } @else {
+                      <span>Full price</span>
+                    }
+                  </span>
+                </div>
+              </label>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ─── Friends ───────────────────────────────────────────── -->
+      <section class="card">
+        <div class="card-header">
+          <h3>Invite friends</h3>
+          <span class="status" [class.met]="invitesValid()">
+            {{ inviteStatusText() }}
+          </span>
+        </div>
+
+        <p class="hint">{{ inviteHelperText() }}</p>
+
+        @if (friendsShortBy() > 0) {
+          <p-message severity="warn" class="w-full short-banner">
+            You're {{ friendsShortBy() }} friend{{ friendsShortBy() === 1 ? '' : 's' }} short to play this sport.
+            Add more in the <a routerLink="/friends">Friends</a> page.
+          </p-message>
+        }
+
+        @if (friends().length === 0) {
+          <div class="state-block compact">
+            <i class="pi pi-users state-icon"></i>
+            <p class="state-message">You don't have any friends yet.</p>
+            <p-button label="Find friends" icon="pi pi-search" routerLink="/friends" />
+          </div>
+        } @else {
+          <div class="friend-grid">
+            @for (friend of friends(); track friend.userId) {
+              <button
+                type="button"
+                class="friend-card"
+                [class.selected]="isInvited(friend.userId)"
+                [class.disabled]="!isInvited(friend.userId) && !canAddMoreInvites()"
+                (click)="toggleInvite(friend.userId)"
+              >
+                <div class="avatar">
+                  @if (avatarUrl(friend.profilePictureUrl); as url) {
+                    <img [src]="url" alt="" />
+                  } @else {
+                    <div class="avatar-fallback">{{ initials(friend.fullName) }}</div>
+                  }
+                </div>
+                <span class="friend-name">{{ friend.fullName }}</span>
+                @if (isInvited(friend.userId)) {
+                  <span class="check-badge"><i class="pi pi-check"></i></span>
+                }
+              </button>
+            }
+          </div>
+        }
+      </section>
+
+      <!-- ─── Summary + submit ──────────────────────────────────── -->
+      <section class="summary-card">
+        <div class="summary-rows">
+          <div class="summary-row">
+            <span class="summary-label">When</span>
+            <span class="summary-value">
+              @if (startDateTime()) {
+                {{ startDateTime() | date:'EEE, MMM d · HH:mm' }}
+              } @else {
+                <span class="muted">Pick a date and hour</span>
+              }
+            </span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Players</span>
+            <span class="summary-value">{{ inviteCount() + 1 }} <span class="muted">(you + {{ inviteCount() }} invited)</span></span>
+          </div>
+          <div class="summary-row total">
+            <span class="summary-label">Total</span>
+            <span class="summary-value price">
+              <span class="amount">{{ totalPrice() }}</span>
+              <span class="unit">/ hour</span>
+              @if (hasDiscount()) {
+                <span class="discount-pill">−25%</span>
+              }
+            </span>
+          </div>
+        </div>
+
+        <p-button
+          type="submit"
+          label="Request booking"
+          icon="pi pi-check"
+          [disabled]="!canSubmit()"
+          [loading]="submitting()"
+          styleClass="submit-btn"
+        />
+      </section>
+
+    </form>
+
+  }
+
+</div>

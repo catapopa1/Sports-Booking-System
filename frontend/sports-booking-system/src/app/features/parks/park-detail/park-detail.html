@@ -71,9 +71,7 @@
             <p-button
               label="Book"
               icon="pi pi-calendar-plus"
-              [disabled]="true"
-              pTooltip="Booking flow arriving in Step 11"
-              tooltipPosition="left"
+              [routerLink]="['/bookings/create', field.id]"
             />
           </div>
         }

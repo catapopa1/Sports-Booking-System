@@ -37,6 +37,10 @@ export const routes: Routes = [
         path: 'friends',
         loadComponent: () => import('./features/friends/friends').then(m => m.FriendsComponent)
       },
+      {
+        path: 'bookings/create/:fieldId',
+        loadComponent: () => import('./features/bookings/create-booking/create-booking').then(m => m.CreateBookingComponent)
+      },
     ]
   },
   { path: '**', redirectTo: '/dashboard' }
