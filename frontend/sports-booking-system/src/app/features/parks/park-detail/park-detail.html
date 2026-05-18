@@ -1,0 +1,84 @@
+<div class="page">
+
+  <a routerLink="/parks" class="back-link">
+    <i class="pi pi-arrow-left"></i>
+    <span>Back to parks</span>
+  </a>
+
+  @if (loading()) {
+    <section class="hero skeleton-hero">
+      <p-skeleton width="50%" height="2.25rem" styleClass="mb-3" />
+      <p-skeleton width="35%" height="1rem" styleClass="mb-2" />
+      <p-skeleton width="25%" height="1rem" />
+    </section>
+    <h3 class="section-title">Available fields</h3>
+    <div class="field-list">
+      @for (i of [1,2,3]; track i) {
+        <div class="field-card skeleton-card">
+          <p-skeleton shape="circle" size="3rem" />
+          <div class="field-info">
+            <p-skeleton width="60%" height="1rem" styleClass="mb-2" />
+            <p-skeleton width="30%" height="0.875rem" />
+          </div>
+          <p-skeleton width="5rem" height="2.5rem" />
+        </div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="state-block">
+      <i class="pi pi-exclamation-triangle state-icon"></i>
+      <p class="state-message">{{ error() }}</p>
+      <p-button label="Back to parks" icon="pi pi-arrow-left" routerLink="/parks" />
+    </div>
+  } @else if (park()) {
+    <section class="hero">
+      <h1>{{ park()!.name }}</h1>
+      <p class="hero-line">
+        <i class="pi pi-map-marker"></i>
+        <span>{{ park()!.address }}, {{ park()!.city }}</span>
+      </p>
+      <p class="hero-line muted">
+        <i class="pi pi-user"></i>
+        <span>Managed by {{ park()!.managerName }}</span>
+      </p>
+    </section>
+
+    <h3 class="section-title">
+      Available fields
+      <span class="field-count">{{ fields().length }}</span>
+    </h3>
+
+    @if (fields().length === 0) {
+      <div class="state-block compact">
+        <i class="pi pi-th-large state-icon"></i>
+        <p class="state-message">No fields have been added to this park yet.</p>
+      </div>
+    } @else {
+      <div class="field-list">
+        @for (field of fields(); track field.id) {
+          <div class="field-card">
+            <div class="sport-badge" [attr.data-sport]="field.sportType">
+              <i [class]="sportIcon(field.sportType)"></i>
+            </div>
+            <div class="field-info">
+              <h4 class="field-name">{{ field.name }}</h4>
+              <p class="field-sport">{{ field.sportType }}</p>
+            </div>
+            <div class="field-price">
+              <span class="amount">{{ field.baseHourlyPrice }}</span>
+              <span class="unit">/ hour</span>
+            </div>
+            <p-button
+              label="Book"
+              icon="pi pi-calendar-plus"
+              [disabled]="true"
+              pTooltip="Booking flow arriving in Step 11"
+              tooltipPosition="left"
+            />
+          </div>
+        }
+      </div>
+    }
+  }
+
+</div>

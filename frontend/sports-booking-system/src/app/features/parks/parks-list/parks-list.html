@@ -1,0 +1,82 @@
+<div class="page">
+
+  <header class="page-header">
+    <div>
+      <h1>Parks</h1>
+      <p class="subtitle">Browse parks and pick a field to book</p>
+    </div>
+  </header>
+
+  <div class="filters">
+    <span class="search-wrap">
+      <i class="pi pi-search"></i>
+      <input
+        pInputText
+        type="text"
+        placeholder="Search by name or city..."
+        [ngModel]="search()"
+        (ngModelChange)="search.set($event)"
+        class="search-input"
+      />
+    </span>
+
+    <p-select
+      [options]="cityOptions()"
+      [ngModel]="cityFilter()"
+      (ngModelChange)="cityFilter.set($event)"
+      placeholder="All cities"
+      class="city-select"
+    />
+  </div>
+
+  @if (loading()) {
+    <div class="park-grid">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="park-card skeleton-card">
+          <p-skeleton height="6rem" styleClass="mb-3" />
+          <p-skeleton width="60%" height="1.25rem" styleClass="mb-2" />
+          <p-skeleton width="40%" height="0.875rem" />
+        </div>
+      }
+    </div>
+  } @else if (error()) {
+    <div class="state-block">
+      <i class="pi pi-exclamation-triangle state-icon"></i>
+      <p class="state-message">{{ error() }}</p>
+      <p-button label="Retry" icon="pi pi-refresh" (onClick)="loadParks()" />
+    </div>
+  } @else if (filteredParks().length === 0) {
+    <div class="state-block">
+      <i class="pi pi-inbox state-icon"></i>
+      @if (parks().length === 0) {
+        <p class="state-message">No parks have been added yet.</p>
+      } @else {
+        <p class="state-message">No parks match your filters.</p>
+        <p-button label="Clear filters" icon="pi pi-times" severity="secondary"
+                  (onClick)="search.set(''); cityFilter.set(null)" />
+      }
+    </div>
+  } @else {
+    <div class="park-grid">
+      @for (park of filteredParks(); track park.id) {
+        <a class="park-card" [routerLink]="['/parks', park.id]">
+          <div class="card-banner"></div>
+          <div class="card-body">
+            <h2 class="park-name">{{ park.name }}</h2>
+            <p class="park-city">
+              <i class="pi pi-map-marker"></i>
+              <span>{{ park.city }}</span>
+            </p>
+            <div class="park-meta">
+              <span class="field-chip">
+                <i class="pi pi-th-large"></i>
+                {{ park.fieldCount }} {{ park.fieldCount === 1 ? 'field' : 'fields' }}
+              </span>
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+
+</div>

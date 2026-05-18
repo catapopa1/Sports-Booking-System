@@ -21,6 +21,18 @@ export const routes: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard').then(m => m.DashboardComponent)
       },
+      {
+        path: 'parks',
+        loadComponent: () => import('./features/parks/parks-list/parks-list').then(m => m.ParksListComponent)
+      },
+      {
+        path: 'parks/:id',
+        loadComponent: () => import('./features/parks/park-detail/park-detail').then(m => m.ParkDetailComponent)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./features/profile/profile').then(m => m.ProfileComponent)
+      },
     ]
   },
   { path: '**', redirectTo: '/dashboard' }
