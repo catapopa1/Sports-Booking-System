@@ -1,6 +1,9 @@
 ## Secrets — never commit
 .env
 
+## User-uploaded files (avatars, etc.) — keep wwwroot tracked via .gitkeep
+backend/SportsBookingSystem.API/wwwroot/uploads/
+
 ## .NET / Rider Ignore
 bin/
 obj/

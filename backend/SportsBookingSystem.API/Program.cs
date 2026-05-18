@@ -149,7 +149,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHangfireDashboard("/hangfire");
-app.UseHttpsRedirection();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseAuthentication();
 app.UseMiddleware<UserIdMiddleware>();
 app.UseAuthorization();
