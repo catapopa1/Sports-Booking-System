@@ -9,52 +9,54 @@ import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 
+// Pitchr — Emerald + Sky preset.
+// Primary = Emerald scale, surfaces = Vanilla (light) / Carbon (dark).
 const AppTheme = definePreset(Aura, {
   semantic: {
     primary: {
-      50:  '#eef2ff',
-      100: '#dce6ff',
-      200: '#b9ccff',
-      300: '#85a7fc',
-      400: '#5480f9',
-      500: '#275BF5',
-      600: '#1a47d4',
-      700: '#1436ab',
-      800: '#112a87',
-      900: '#0f2268',
-      950: '#091444'
+      50:  '#ECFDF5',
+      100: '#D1FAE5',
+      200: '#A7F3D0',
+      300: '#6EE7B7',
+      400: '#34D399',
+      500: '#10B981',
+      600: '#059669',
+      700: '#047857',
+      800: '#065F46',
+      900: '#064E3B',
+      950: '#022C22'
     },
     colorScheme: {
       light: {
         surface: {
-          0:   '#ffffff',
-          50:  '#f7f7f3',
-          100: '#efefe9',
-          200: '#e2e2da',
-          300: '#d1d1c7',
-          400: '#a8a89a',
-          500: '#7e7e72',
-          600: '#5c5c52',
-          700: '#3d3d35',
-          800: '#252520',
-          900: '#131310',
-          950: '#090907'
+          0:   '#FFFFFF',
+          50:  '#FDFBF7',
+          100: '#FCFAF4',
+          200: '#F4F0E5',
+          300: '#DDD4B8',
+          400: '#C9C2A8',
+          500: '#9AA0AB',
+          600: '#4A5260',
+          700: '#2E343F',
+          800: '#232830',
+          900: '#181C24',
+          950: '#0E1115'
         }
       },
       dark: {
         surface: {
-          0:   '#0a1628',
-          50:  '#0f1f38',
-          100: '#152847',
-          200: '#1c3358',
-          300: '#243f6b',
-          400: '#2f507f',
-          500: '#3d6496',
-          600: '#5a7fb0',
-          700: '#7d9dc5',
-          800: '#a4bcd8',
-          900: '#ccdaeb',
-          950: '#e8eef6'
+          0:   '#0E1115',
+          50:  '#181C24',
+          100: '#232830',
+          200: '#2E343F',
+          300: '#3D4351',
+          400: '#545A68',
+          500: '#9AA0AB',
+          600: '#D1D5DC',
+          700: '#E5E7EC',
+          800: '#F2F4F7',
+          900: '#FAFBFC',
+          950: '#FFFFFF'
         }
       }
     }

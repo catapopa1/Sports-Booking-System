@@ -1,9 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
+import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { UsersService } from '../../core/services/users.service';
 
 interface NavItem {
   label: string;
@@ -22,9 +24,33 @@ interface NavItem {
 export class SidebarComponent {
   readonly auth = inject(AuthService);
   readonly theme = inject(ThemeService);
+  private readonly usersService = inject(UsersService);
   readonly collapsed = signal(false);
 
-  readonly userInitial = computed(() => (this.auth.user()?.email ?? '?')[0].toUpperCase());
+  /** Profile picture URL — loaded once after login from the user's profile. */
+  readonly profilePictureUrl = signal<string | null>(null);
+  /** Full name — loaded once after login from the user's profile. Falls back to email. */
+  readonly fullName = signal<string | null>(null);
+
+  readonly displayName = computed(() => this.fullName() ?? this.auth.user()?.email ?? '');
+
+  readonly userInitial = computed(() => {
+    const name = this.fullName()?.trim();
+    if (name) {
+      const parts = name.split(/\s+/);
+      const first = parts[0]?.[0] ?? '';
+      const last = parts.length > 1 ? parts[parts.length - 1][0] : '';
+      return (first + last).toUpperCase() || '?';
+    }
+    return (this.auth.user()?.email ?? '?')[0].toUpperCase();
+  });
+
+  readonly avatarUrl = computed(() => {
+    const raw = this.profilePictureUrl();
+    if (!raw) return null;
+    if (raw.startsWith('http')) return raw;
+    return `${environment.apiBaseUrl}${raw.startsWith('/') ? raw : '/' + raw}`;
+  });
 
   private readonly allNavItems: NavItem[] = [
     { label: 'Dashboard',     icon: 'pi pi-home',     route: '/dashboard' },
@@ -40,6 +66,27 @@ export class SidebarComponent {
     const role = this.auth.role();
     return this.allNavItems.filter(item => !item.roles || item.roles.includes(role ?? ''));
   });
+
+  constructor() {
+    // Load profile picture whenever the user becomes logged in.
+    effect(() => {
+      const user = this.auth.user();
+      if (user) {
+        this.usersService.getMyProfile()
+          .then(p => {
+            this.profilePictureUrl.set(p.profilePictureUrl);
+            this.fullName.set(p.fullName);
+          })
+          .catch(() => {
+            this.profilePictureUrl.set(null);
+            this.fullName.set(null);
+          });
+      } else {
+        this.profilePictureUrl.set(null);
+        this.fullName.set(null);
+      }
+    });
+  }
 
   toggle(): void {
     this.collapsed.update(v => !v);

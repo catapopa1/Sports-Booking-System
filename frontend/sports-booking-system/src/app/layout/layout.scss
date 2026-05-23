@@ -4,8 +4,19 @@
   background: var(--bg-base);
 }
 
+/* Make the sidebar a fixed left column so it never scrolls away.
+   The actual width is set on the sidebar host (240 / 64 collapsed). */
+app-sidebar {
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  z-index: 50;
+}
+
 .content {
   flex: 1;
+  min-width: 0;        /* allow flex children to shrink instead of pushing wider */
   overflow-y: auto;
   padding: 2rem;
 }

@@ -41,6 +41,10 @@ export const routes: Routes = [
         path: 'bookings/create/:fieldId',
         loadComponent: () => import('./features/bookings/create-booking/create-booking').then(m => m.CreateBookingComponent)
       },
+      {
+        path: 'palettes',
+        loadComponent: () => import('./features/palettes-preview/palettes-preview').then(m => m.PalettesPreviewComponent)
+      },
     ]
   },
   { path: '**', redirectTo: '/dashboard' }

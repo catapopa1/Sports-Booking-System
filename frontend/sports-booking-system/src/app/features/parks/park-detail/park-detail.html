@@ -1,79 +1,136 @@
 <div class="page">
 
-  <a routerLink="/parks" class="back-link">
+  <a routerLink="/parks" class="back-link" pchMagnetic [pchMagneticStrength]="0.15">
     <i class="pi pi-arrow-left"></i>
     <span>Back to parks</span>
   </a>
 
   @if (loading()) {
     <section class="hero skeleton-hero">
-      <p-skeleton width="50%" height="2.25rem" styleClass="mb-3" />
-      <p-skeleton width="35%" height="1rem" styleClass="mb-2" />
-      <p-skeleton width="25%" height="1rem" />
+      <div class="skeleton-gold" style="width: 60%; height: 3.5rem; margin-bottom: 1rem;"></div>
+      <div class="skeleton-gold" style="width: 40%; height: 1.1rem; margin-bottom: 0.6rem;"></div>
+      <div class="skeleton-gold" style="width: 28%; height: 1.1rem;"></div>
     </section>
     <h3 class="section-title">Available fields</h3>
     <div class="field-list">
       @for (i of [1,2,3]; track i) {
         <div class="field-card skeleton-card">
-          <p-skeleton shape="circle" size="3rem" />
+          <div class="skeleton-gold" style="width: 4rem; height: 4rem; border-radius: 50%;"></div>
           <div class="field-info">
-            <p-skeleton width="60%" height="1rem" styleClass="mb-2" />
-            <p-skeleton width="30%" height="0.875rem" />
+            <div class="skeleton-gold" style="width: 60%; height: 1.1rem; margin-bottom: 0.5rem;"></div>
+            <div class="skeleton-gold" style="width: 28%; height: 0.85rem;"></div>
           </div>
-          <p-skeleton width="5rem" height="2.5rem" />
+          <div class="skeleton-gold" style="width: 7rem; height: 2.8rem; border-radius: 999px;"></div>
         </div>
       }
     </div>
   } @else if (error()) {
     <div class="state-block">
-      <i class="pi pi-exclamation-triangle state-icon"></i>
+      <pch-sport-ball-3d sport="Football" [size]="100" [floating]="true" />
       <p class="state-message">{{ error() }}</p>
-      <p-button label="Back to parks" icon="pi pi-arrow-left" routerLink="/parks" />
+      <a routerLink="/parks" pch-shimmer-button>
+        <i class="pi pi-arrow-left"></i>
+        <span>Back to parks</span>
+      </a>
     </div>
   } @else if (park()) {
+
+    <!-- ── HERO ───────────────────────────────────────────────────── -->
     <section class="hero">
-      <h1>{{ park()!.name }}</h1>
-      <p class="hero-line">
-        <i class="pi pi-map-marker"></i>
-        <span>{{ park()!.address }}, {{ park()!.city }}</span>
-      </p>
-      <p class="hero-line muted">
-        <i class="pi pi-user"></i>
-        <span>Managed by {{ park()!.managerName }}</span>
-      </p>
+      <div class="hero__bg" aria-hidden="true">
+        <pch-mesh-gradient
+          [colors]="heroColors()"
+          [speed]="0.35"
+          [distortion]="0.85"
+          [swirl]="0.12"
+          [grainOverlay]="0.06" />
+      </div>
+      <div class="hero__watermark" aria-hidden="true">
+        <pch-field-schematic [sport]="dominantSport()" [opacity]="0.18" tint="#10B981" />
+      </div>
+      <div class="hero__scrim" aria-hidden="true"></div>
+
+      <div class="hero__content">
+        <span class="hero__eyebrow">
+          <i class="pi pi-map-marker"></i>
+          <span>{{ park()!.city }}</span>
+        </span>
+
+        <h1 class="hero__title font-display">
+          <pch-gradient-text>{{ park()!.name }}</pch-gradient-text>
+        </h1>
+
+        <div class="hero__meta">
+          <span class="hero__chip">
+            <i class="pi pi-map"></i>
+            <span>{{ park()!.address }}</span>
+          </span>
+          <span class="hero__chip">
+            <i class="pi pi-user"></i>
+            <span>Managed by {{ park()!.managerName }}</span>
+          </span>
+          <span class="hero__chip is-accent">
+            <i class="pi pi-th-large"></i>
+            <pch-count-up [value]="fields().length" />
+            <span>{{ fields().length === 1 ? 'field' : 'fields' }}</span>
+          </span>
+        </div>
+      </div>
     </section>
 
     <h3 class="section-title">
-      Available fields
-      <span class="field-count">{{ fields().length }}</span>
+      <span>Available fields</span>
+      <span class="section-line" aria-hidden="true"></span>
     </h3>
 
     @if (fields().length === 0) {
       <div class="state-block compact">
-        <i class="pi pi-th-large state-icon"></i>
+        <pch-sport-ball-3d [sport]="dominantSport()" [size]="96" [floating]="true" />
         <p class="state-message">No fields have been added to this park yet.</p>
       </div>
     } @else {
-      <div class="field-list">
-        @for (field of fields(); track field.id) {
-          <div class="field-card">
-            <div class="sport-badge" [attr.data-sport]="field.sportType">
-              <i [class]="sportIcon(field.sportType)"></i>
+      <div class="field-list stagger">
+        @for (field of fields(); track field.id; let i = $index) {
+          <pch-spotlight-card
+            class="field-card"
+            pchReveal="blur"
+            [pchRevealDelay]="i * 60"
+            [attr.data-sport]="field.sportType">
+
+            <div class="field-card__ball">
+              <pch-sport-ball-3d [sport]="field.sportType" [size]="72" [floating]="true" />
             </div>
-            <div class="field-info">
-              <h4 class="field-name">{{ field.name }}</h4>
-              <p class="field-sport">{{ field.sportType }}</p>
+
+            <div class="field-card__info">
+              <h4 class="field-card__name font-display">{{ field.name }}</h4>
+              <div class="field-card__row">
+                <span class="sport-tag" [attr.data-sport]="field.sportType">
+                  <i class="pi pi-circle-fill"></i>
+                  <span>{{ field.sportType }}</span>
+                </span>
+                <span class="field-card__duration">
+                  <i class="pi pi-clock"></i>
+                  <span>1-hour slots</span>
+                </span>
+              </div>
             </div>
-            <div class="field-price">
-              <span class="amount">{{ field.baseHourlyPrice }}</span>
-              <span class="unit">/ hour</span>
+
+            <div class="field-card__price">
+              <span class="field-card__amount">
+                <span class="currency">€</span>
+                <pch-count-up [value]="field.baseHourlyPrice" [decimals]="2" />
+              </span>
+              <span class="field-card__unit">/ hour</span>
             </div>
-            <p-button
-              label="Book"
-              icon="pi pi-calendar-plus"
-              [routerLink]="['/bookings/create', field.id]"
-            />
-          </div>
+
+            <a [routerLink]="['/bookings/create', field.id]"
+               pch-shimmer-button
+               class="field-card__cta">
+              <i class="pi pi-calendar-plus"></i>
+              <span>Book</span>
+              <i class="pi pi-arrow-right field-card__cta-arrow"></i>
+            </a>
+          </pch-spotlight-card>
         }
       </div>
     }

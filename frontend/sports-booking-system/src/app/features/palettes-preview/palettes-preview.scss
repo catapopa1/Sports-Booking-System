@@ -1,0 +1,267 @@
+/* ──────────────────────────────────────────────────────────────────────
+   Accent picker — same Carbon dark + Cool Gray base, only --accent swaps.
+   ────────────────────────────────────────────────────────────────────── */
+
+.palettes-page {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+
+  &__header {
+    margin-bottom: 2.5rem;
+    text-align: center;
+  }
+  &__title {
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  &__subtitle {
+    color: var(--text-secondary);
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.55;
+
+    b { color: var(--text-primary); font-family: var(--font-mono); font-weight: 600; }
+  }
+}
+
+/* ── Group ───────────────────────────────────────────────────────── */
+.group {
+  margin-bottom: 3rem;
+
+  &__header {
+    margin-bottom: 1rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+  }
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+  &__desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+@media (max-width: 1280px) { .group__grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px)  { .group__grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px)  { .group__grid { grid-template-columns: 1fr; } }
+
+/* ── Swatch card ─────────────────────────────────────────────────── */
+.swatch-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 240ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow:
+      0 10px 24px color-mix(in srgb, var(--accent) 16%, transparent),
+      0 2px 6px rgba(10, 14, 20, 0.06);
+  }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  &__id {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  &__name {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
+  &__hex {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+  }
+
+  /* Three side-by-side color blocks: main / tint / deep */
+  &__blocks {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 4px;
+    height: 36px;
+  }
+}
+
+.block {
+  border-radius: 8px;
+  &--main { background: var(--accent); }
+  &--tint { background: var(--accent-tint); }
+  &--deep { background: var(--accent-deep); }
+}
+
+/* ── Mini dark hero ───────────────────────────────────────────────── */
+.mock-hero {
+  position: relative;
+  background: linear-gradient(135deg, #0A0E14 0%, #131822 100%);
+  border-radius: 12px;
+  padding: 0.85rem 0.85rem 1rem;
+  overflow: hidden;
+  color: #F2F4F7;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(140px circle at 100% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  & > * { position: relative; }
+
+  &__chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    color: var(--accent-tint);
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  &__title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+
+  .title-shimmer {
+    background: linear-gradient(95deg, var(--accent) 0%, #FFFFFF 50%, var(--accent) 100%);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: title-shimmer 6s linear infinite;
+  }
+}
+
+@keyframes title-shimmer {
+  0%   { background-position: -200% 50%; }
+  100% { background-position:  200% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-shimmer { animation: none; }
+}
+
+/* ── Mini field row ──────────────────────────────────────────────── */
+.mock-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--bg-base);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 0.625rem 0.7rem;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    color: var(--accent-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    svg { stroke-width: 1.7; }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+  &__title {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &__tag {
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    color: var(--accent-deep);
+    font-weight: 700;
+  }
+
+  &__cta {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border: none;
+    border-radius: 999px;
+    padding: 0.4rem 0.7rem;
+    font-weight: 700;
+    font-size: 0.72rem;
+    cursor: pointer;
+    flex-shrink: 0;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    transition: transform 160ms ease, box-shadow 160ms ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+  }
+}
