@@ -7,8 +7,10 @@ using ErrorOr;
 using SportsBookingSystem.Application.Commands.Users.ChangePassword;
 using SportsBookingSystem.Application.Commands.Users.UpdateProfile;
 using SportsBookingSystem.Application.Commands.Users.UploadAvatar;
+using SportsBookingSystem.Application.Commands.Users.UpsertSportProfile;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Application.Queries.Users.GetUserProfile;
+using SportsBookingSystem.Domain.Enums;
 
 namespace SportsBookingSystem.API.Controllers;
 
@@ -23,13 +25,15 @@ public class UsersController : BaseController
     private readonly ICommandHandler<UploadAvatarCommand,ErrorOr<string>> _uploadAvatarHandler;
     private readonly ICommandHandler<UpdateProfileCommand,ErrorOr<Updated>> _updateProfileHandler;
     private readonly ICommandHandler<ChangePasswordCommand,ErrorOr<Updated>> _changePasswordHandler;
+    private readonly ICommandHandler<UpsertSportProfileCommand,ErrorOr<Updated>> _upsertSportProfileHandler;
 
-    public UsersController(ICurrentUserService currentUser, 
+    public UsersController(ICurrentUserService currentUser,
         IQueryHandler<SearchUsersQuery, ErrorOr<PagedResult<UserSearchResultDto>>> searchUsersQueryHandler,
-        IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>> getUserProfileHandler, 
-        ICommandHandler<UploadAvatarCommand, ErrorOr<string>> uploadAvatarHandler, 
+        IQueryHandler<GetUserProfileQuery, ErrorOr<UserProfileDto>> getUserProfileHandler,
+        ICommandHandler<UploadAvatarCommand, ErrorOr<string>> uploadAvatarHandler,
         ICommandHandler<UpdateProfileCommand, ErrorOr<Updated>> updateProfileHandler,
-        ICommandHandler<ChangePasswordCommand, ErrorOr<Updated>> changePasswordHandler)
+        ICommandHandler<ChangePasswordCommand, ErrorOr<Updated>> changePasswordHandler,
+        ICommandHandler<UpsertSportProfileCommand, ErrorOr<Updated>> upsertSportProfileHandler)
     {
         _currentUser = currentUser;
         _searchUsersQueryHandler = searchUsersQueryHandler;
@@ -37,6 +41,7 @@ public class UsersController : BaseController
         _uploadAvatarHandler = uploadAvatarHandler;
         _updateProfileHandler = updateProfileHandler;
         _changePasswordHandler = changePasswordHandler;
+        _upsertSportProfileHandler = upsertSportProfileHandler;
     }
 
     [HttpGet("search")]
@@ -87,6 +92,20 @@ public class UsersController : BaseController
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command, CancellationToken ct)
     {
         var result = await _changePasswordHandler.HandleAsync(command, ct);
+        return result.Match(_ => Ok(), Problem);
+    }
+
+    public record UpsertSportProfileRequest(SportLevel? Level, string? FavoriteAthlete);
+
+    [HttpPut("me/sports/{sport}")]
+    [Authorize]
+    public async Task<IActionResult> UpsertSportProfile(
+        SportType sport,
+        [FromBody] UpsertSportProfileRequest request,
+        CancellationToken ct = default)
+    {
+        var command = new UpsertSportProfileCommand(sport, request.Level, request.FavoriteAthlete);
+        var result = await _upsertSportProfileHandler.HandleAsync(command, ct);
         return result.Match(_ => Ok(), Problem);
     }
 }

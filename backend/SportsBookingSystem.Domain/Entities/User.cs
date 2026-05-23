@@ -17,4 +17,5 @@ public class User : BaseEntity
     public ICollection<Booking> OrganizedBookings { get; set; } = [];
     public ICollection<BookingInvite> Invites { get; set; } = [];
     public ICollection<Notification> Notifications { get; set; } = [];
+    public ICollection<UserSportProfile> SportProfiles { get; set; } = [];
 }

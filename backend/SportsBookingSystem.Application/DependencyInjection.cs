@@ -25,6 +25,7 @@ using SportsBookingSystem.Application.Commands.Users.ChangePassword;
 using SportsBookingSystem.Application.Commands.Users.UpdateProfile;
 using SportsBookingSystem.Application.Commands.Users.UpdateUserRole;
 using SportsBookingSystem.Application.Commands.Users.UploadAvatar;
+using SportsBookingSystem.Application.Commands.Users.UpsertSportProfile;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Queries.Auth.Login;
 using SportsBookingSystem.Application.Queries.Dtos;
@@ -93,6 +94,8 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UploadAvatarCommand, ErrorOr<string>>, UploadAvatarHandler>();
         services.AddScoped<ICommandHandler<ChangePasswordCommand, ErrorOr<Updated>>, ChangePasswordHandler>();
         services.AddScoped<IValidator<ChangePasswordCommand>, ChangePasswordValidator>();
+        services.AddScoped<ICommandHandler<UpsertSportProfileCommand, ErrorOr<Updated>>, UpsertSportProfileHandler>();
+        services.AddScoped<IValidator<UpsertSportProfileCommand>, UpsertSportProfileValidator>();
 
         // Bookings 
         services.AddScoped<ICommandHandler<CreateBookingCommand, ErrorOr<int>>, CreateBookingHandler>();

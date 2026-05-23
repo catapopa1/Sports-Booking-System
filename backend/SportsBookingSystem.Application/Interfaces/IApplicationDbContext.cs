@@ -7,6 +7,7 @@ namespace SportsBookingSystem.Application.Interfaces;
 public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
+    DbSet<UserSportProfile> UserSportProfiles { get; }
     DbSet<Park> Parks { get; }
     DbSet<ParkPhoto> ParkPhotos { get; }
     DbSet<Field> Fields { get; }

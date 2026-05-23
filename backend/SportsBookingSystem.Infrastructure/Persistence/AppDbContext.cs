@@ -19,6 +19,7 @@ public class AppDbContext: DbContext,IApplicationDbContext
 
 
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserSportProfile> UserSportProfiles => Set<UserSportProfile>();
     public DbSet<Park> Parks => Set<Park>();
     public DbSet<ParkPhoto> ParkPhotos => Set<ParkPhoto>();
     public DbSet<Field> Fields => Set<Field>();

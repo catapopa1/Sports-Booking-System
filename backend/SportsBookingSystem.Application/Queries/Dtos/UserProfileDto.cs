@@ -5,4 +5,5 @@ public record UserProfileDto(
     string FullName,
     string? Bio,
     string? ProfilePictureUrl,
-    string Role);
+    string Role,
+    List<UserSportSummaryDto> Sports);
