@@ -38,6 +38,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/friends/friends').then(m => m.FriendsComponent)
       },
       {
+        path: 'users/:id',
+        loadComponent: () => import('./features/users/user-profile-view/user-profile-view').then(m => m.UserProfileViewComponent)
+      },
+      {
         path: 'bookings/create/:fieldId',
         loadComponent: () => import('./features/bookings/create-booking/create-booking').then(m => m.CreateBookingComponent)
       },

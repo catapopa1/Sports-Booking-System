@@ -53,7 +53,7 @@
         } @else {
           <div class="row-list">
             @for (friend of friends(); track friend.friendshipId) {
-              <div class="user-row">
+              <a class="user-row" [routerLink]="['/users', friend.userId]">
                 <div class="avatar">
                   @if (avatarUrl(friend.profilePictureUrl); as url) {
                     <img [src]="url" alt="" />
@@ -64,7 +64,7 @@
                 <div class="info">
                   <h4 class="name">{{ friend.fullName }}</h4>
                 </div>
-                <div class="actions">
+                <div class="actions" (click)="$event.stopPropagation(); $event.preventDefault()">
                   <p-button
                     icon="pi pi-user-minus"
                     label="Remove"
@@ -74,7 +74,7 @@
                     (onClick)="removeFriend(friend.friendshipId, friend.fullName)"
                   />
                 </div>
-              </div>
+              </a>
             }
           </div>
         }
@@ -118,7 +118,7 @@
         } @else {
           <div class="row-list">
             @for (user of searchResults(); track user.userId) {
-              <div class="user-row">
+              <a class="user-row" [routerLink]="['/users', user.userId]">
                 <div class="avatar">
                   @if (avatarUrl(user.profilePictureUrl); as url) {
                     <img [src]="url" alt="" />
@@ -129,7 +129,7 @@
                 <div class="info">
                   <h4 class="name">{{ user.fullName }}</h4>
                 </div>
-                <div class="actions">
+                <div class="actions" (click)="$event.stopPropagation(); $event.preventDefault()">
                   @if (user.alreadyFriends) {
                     <span class="badge badge-success">
                       <i class="pi pi-check"></i> Friends
@@ -147,7 +147,7 @@
                     />
                   }
                 </div>
-              </div>
+              </a>
             }
           </div>
         }
@@ -174,7 +174,7 @@
         } @else {
           <div class="row-list">
             @for (req of pending(); track req.friendshipId) {
-              <div class="user-row">
+              <a class="user-row" [routerLink]="['/users', req.userId]">
                 <div class="avatar">
                   @if (avatarUrl(req.profilePictureUrl); as url) {
                     <img [src]="url" alt="" />
@@ -186,7 +186,7 @@
                   <h4 class="name">{{ req.fullName }}</h4>
                   <p class="time">Sent {{ relativeTime(req.createdAt) }}</p>
                 </div>
-                <div class="actions">
+                <div class="actions" (click)="$event.stopPropagation(); $event.preventDefault()">
                   <p-button
                     icon="pi pi-times"
                     label="Decline"
@@ -202,7 +202,7 @@
                     (onClick)="accept(req.friendshipId)"
                   />
                 </div>
-              </div>
+              </a>
             }
           </div>
         }
@@ -229,7 +229,7 @@
         } @else {
           <div class="row-list">
             @for (req of sent(); track req.friendshipId) {
-              <div class="user-row">
+              <a class="user-row" [routerLink]="['/users', req.userId]">
                 <div class="avatar">
                   @if (avatarUrl(req.profilePictureUrl); as url) {
                     <img [src]="url" alt="" />
@@ -241,7 +241,7 @@
                   <h4 class="name">{{ req.fullName }}</h4>
                   <p class="time">Sent {{ relativeTime(req.createdAt) }}</p>
                 </div>
-                <div class="actions">
+                <div class="actions" (click)="$event.stopPropagation(); $event.preventDefault()">
                   <p-button
                     icon="pi pi-times"
                     label="Cancel"
@@ -251,7 +251,7 @@
                     (onClick)="cancelSent(req.friendshipId)"
                   />
                 </div>
-              </div>
+              </a>
             }
           </div>
         }

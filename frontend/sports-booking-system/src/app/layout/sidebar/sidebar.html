@@ -56,7 +56,9 @@
       }
     </button>
 
-    <div class="user-row"
+    <a class="user-row"
+      [routerLink]="['/profile']"
+      routerLinkActive="active"
       [pTooltip]="collapsed() ? displayName() : ''"
       tooltipPosition="right">
       @if (avatarUrl(); as src) {
@@ -67,7 +69,7 @@
       @if (!collapsed()) {
         <span class="user-name">{{ displayName() }}</span>
       }
-    </div>
+    </a>
 
     <button class="action-btn logout" (click)="auth.logout()"
       [pTooltip]="collapsed() ? 'Logout' : ''" tooltipPosition="right">

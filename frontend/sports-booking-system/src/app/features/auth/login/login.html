@@ -21,7 +21,7 @@
 
         <div class="field">
           <label for="password">Password</label>
-          <p-password id="password" formControlName="password" placeholder="Password" [feedback]="false" [toggleMask]="true" class="w-full" />
+          <p-password id="password" formControlName="password" placeholder="Password" [feedback]="false" [toggleMask]="true" class="w-full" [inputStyleClass]="'w-full'" />
           @if (form.controls.password.invalid && form.controls.password.touched) {
             <small class="error-hint">Password is required.</small>
           }

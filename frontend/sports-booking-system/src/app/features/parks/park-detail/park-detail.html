@@ -117,10 +117,9 @@
 
             <div class="field-card__price">
               <span class="field-card__amount">
-                <span class="currency">€</span>
                 <pch-count-up [value]="field.baseHourlyPrice" [decimals]="2" />
               </span>
-              <span class="field-card__unit">/ hour</span>
+              <span class="field-card__unit">RON / hour</span>
             </div>
 
             <a [routerLink]="['/bookings/create', field.id]"

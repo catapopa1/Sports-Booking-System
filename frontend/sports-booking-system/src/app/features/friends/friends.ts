@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -18,6 +19,7 @@ import { UserSearchResultDto } from '../../core/models/user.models';
   standalone: true,
   imports: [
     FormsModule,
+    RouterLink,
     TabsModule,
     BadgeModule,
     ButtonModule,

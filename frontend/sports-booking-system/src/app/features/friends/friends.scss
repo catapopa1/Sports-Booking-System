@@ -77,6 +77,9 @@
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--border-color);
   transition: background 0.15s ease;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
 
   &:last-child {
     border-bottom: none;

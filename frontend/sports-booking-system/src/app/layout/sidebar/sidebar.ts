@@ -58,7 +58,6 @@ export class SidebarComponent {
     { label: 'Bookings',      icon: 'pi pi-calendar', route: '/bookings' },
     { label: 'Friends',       icon: 'pi pi-users',    route: '/friends' },
     { label: 'Notifications', icon: 'pi pi-bell',     route: '/notifications' },
-    { label: 'Profile',       icon: 'pi pi-user',     route: '/profile' },
     { label: 'Admin',         icon: 'pi pi-shield',   route: '/admin', roles: ['Admin'] },
   ];
 
