@@ -27,6 +27,7 @@ using SportsBookingSystem.Application.Commands.Users.UpdateUserRole;
 using SportsBookingSystem.Application.Commands.Users.UploadAvatar;
 using SportsBookingSystem.Application.Commands.Users.UpsertSportProfile;
 using SportsBookingSystem.Application.Common;
+using SportsBookingSystem.Application.Queries.Auth.GoogleSignIn;
 using SportsBookingSystem.Application.Queries.Auth.Login;
 using SportsBookingSystem.Application.Queries.Dtos;
 using SportsBookingSystem.Application.Queries.Fields.GetFieldById;
@@ -54,6 +55,7 @@ public static class DependencyInjection
         // Auth
         services.AddScoped<ICommandHandler<RegisterCommand, ErrorOr<int>>, RegisterHandler>();
         services.AddScoped<IQueryHandler<LoginQuery, ErrorOr<LoginResult>>, LoginQueryHandler>();
+        services.AddScoped<IQueryHandler<GoogleSignInQuery, ErrorOr<LoginResult>>, GoogleSignInHandler>();
         services.AddScoped<IValidator<RegisterCommand>, RegisterCommandValidator>();
 
         // Parks

@@ -24,7 +24,8 @@ public class LoginQueryHandler : IQueryHandler<LoginQuery,ErrorOr<LoginResult>>
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Email == query.Email, ct);
 
-        if (user is null || !_passwordHasher.Verify(query.Password, user.PasswordHash))
+        if (user is null || user.PasswordHash is null
+            || !_passwordHasher.Verify(query.Password, user.PasswordHash))
             return Error.Unauthorized("Auth.InvalidCredentials", "Email or password is incorrect");
 
         var token = _tokenService.GenerateToken(user);

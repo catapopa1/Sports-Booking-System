@@ -42,6 +42,10 @@ public class ChangePasswordHandler : ICommandHandler<ChangePasswordCommand,Error
         if (user is null)
             return Error.NotFound("User.NotFound", "The specified user cannot be found");
 
+        if (user.PasswordHash is null)
+            return Error.Validation("Auth.NoPassword",
+                "This account signs in via Google and doesn't have a password to change.");
+
         if (!_passwordHasher.Verify(command.CurrentPassword, user.PasswordHash))
             return Error.Validation("Auth.WrongPassword", "Current Password is incorrect");
         
