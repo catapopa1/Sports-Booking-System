@@ -4,6 +4,7 @@ using ErrorOr;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Application.Common;
+using SportsBookingSystem.Application.Common.Text;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Domain.Entities;
 using SportsBookingSystem.Domain.Enums;
@@ -39,7 +40,7 @@ public class CreateParkHandler : ICommandHandler<CreateParkCommand,ErrorOr<int>>
         {
             Name =  command.Name,
             Address = command.Address,
-            City = command.City,
+            City = CityNormalizer.Normalize(command.City),
             ManagerId = command.ManagerId
         };
         

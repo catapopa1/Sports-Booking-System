@@ -1,6 +1,7 @@
 using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Application.Common;
+using SportsBookingSystem.Application.Common.Text;
 using SportsBookingSystem.Application.Interfaces;
 
 namespace SportsBookingSystem.Application.Commands.Parks.UpdatePark;
@@ -24,7 +25,7 @@ public class UpdateParkHandler : ICommandHandler<UpdateParkCommand, ErrorOr<Upda
         
         park.Name = command.Name;
         park.Address = command.Address;
-        park.City = command.City;
+        park.City = CityNormalizer.Normalize(command.City);
 
         await _dbContext.SaveChangesAsync(ct);
 
