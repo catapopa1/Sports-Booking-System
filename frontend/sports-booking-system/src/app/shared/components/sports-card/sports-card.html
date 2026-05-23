@@ -1,0 +1,95 @@
+<section class="sports-card">
+  <header class="sports-card__head">
+    <h3>Sports</h3>
+    @if (!isReadonly()) {
+      <p class="sports-card__hint">Set your level and favorite athlete per sport.</p>
+    }
+  </header>
+
+  @if (visibleSports().length === 0) {
+    <p class="sports-card__empty">No sport details to show yet.</p>
+  } @else {
+    <div class="sports-grid">
+      @for (s of visibleSports(); track s.sport) {
+        <div class="sport-row" [attr.data-sport]="s.sport">
+          <div class="sport-row__head">
+            <span class="sport-name">{{ s.sport }}</span>
+            @if (s.level) {
+              <span class="level-chip" [attr.data-level]="s.level">{{ s.level }}</span>
+            }
+          </div>
+
+          <div class="sport-row__details">
+            @if (s.favoriteAthlete) {
+              <p class="favorite">
+                <i class="pi pi-star-fill"></i>
+                <span class="favorite__label">Favorite:</span>
+                <span class="favorite__name">{{ s.favoriteAthlete }}</span>
+              </p>
+            }
+            <p class="matches">
+              <i class="pi pi-trophy"></i>
+              <span>{{ s.matchesPlayed }} {{ s.matchesPlayed === 1 ? 'match' : 'matches' }} played</span>
+            </p>
+          </div>
+
+          @if (!isReadonly()) {
+            <div class="sport-row__actions">
+              <p-button
+                [icon]="(s.level || s.favoriteAthlete) ? 'pi pi-pencil' : 'pi pi-plus'"
+                [label]="(s.level || s.favoriteAthlete) ? 'Edit' : 'Add'"
+                severity="secondary"
+                [text]="true"
+                (onClick)="startEdit(s)" />
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</section>
+
+<p-dialog
+  [header]="(editingSport() ?? '') + ' details'"
+  [visible]="editingSport() !== null"
+  (visibleChange)="onDialogVisibleChange($event)"
+  [modal]="true"
+  [closable]="!saving()"
+  [closeOnEscape]="!saving()"
+  [dismissableMask]="!saving()"
+  [style]="{ width: '420px' }"
+  styleClass="sports-edit-dialog">
+
+  <div class="dialog-field">
+    <label for="level">Level</label>
+    <p-select
+      id="level"
+      [options]="levelOptions"
+      [ngModel]="draftLevel()"
+      (ngModelChange)="draftLevel.set($event)"
+      placeholder="Not set"
+      optionLabel="label"
+      optionValue="value"
+      appendTo="body"
+      class="w-full" />
+  </div>
+
+  <div class="dialog-field">
+    <label for="athlete">Favorite athlete</label>
+    <input
+      id="athlete"
+      pInputText
+      [ngModel]="draftFavoriteAthlete()"
+      (ngModelChange)="draftFavoriteAthlete.set($event)"
+      placeholder="e.g. Messi"
+      maxlength="100"
+      class="w-full" />
+  </div>
+
+  <p class="dialog-hint">Leave both blank and save to clear this sport from your profile.</p>
+
+  <ng-template pTemplate="footer">
+    <p-button label="Cancel" severity="secondary" [text]="true" [disabled]="saving()" (onClick)="cancel()" />
+    <p-button label="Save" icon="pi pi-check" [loading]="saving()" (onClick)="save()" />
+  </ng-template>
+</p-dialog>

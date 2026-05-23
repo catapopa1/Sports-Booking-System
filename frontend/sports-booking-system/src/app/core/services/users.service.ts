@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { UserProfileDto, UserSearchResultDto } from '../models/user.models';
+import { SportType, UpsertSportProfileRequest, UserProfileDto, UserSearchResultDto } from '../models/user.models';
 import { PagedResult } from '../models/pagination.models';
 
 @Injectable({ providedIn: 'root' })
@@ -43,6 +43,12 @@ export class UsersService {
     formData.append('file', file);
     return firstValueFrom(
       this.http.post<{ url: string }>(`${this.base}/me/avatar`, formData)
+    );
+  }
+
+  upsertSportProfile(sport: SportType, body: UpsertSportProfileRequest): Promise<void> {
+    return firstValueFrom(
+      this.http.put<void>(`${this.base}/me/sports/${sport}`, body)
     );
   }
 }

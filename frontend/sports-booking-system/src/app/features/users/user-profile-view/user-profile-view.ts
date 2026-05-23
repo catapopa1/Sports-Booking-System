@@ -5,11 +5,12 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { environment } from '../../../../environments/environment';
 import { UsersService } from '../../../core/services/users.service';
 import { UserProfileDto } from '../../../core/models/user.models';
+import { SportsCardComponent } from '../../../shared/components/sports-card/sports-card';
 
 @Component({
   selector: 'app-user-profile-view',
   standalone: true,
-  imports: [RouterLink, ButtonModule, SkeletonModule],
+  imports: [RouterLink, ButtonModule, SkeletonModule, SportsCardComponent],
   templateUrl: './user-profile-view.html',
   styleUrl: './user-profile-view.scss',
 })

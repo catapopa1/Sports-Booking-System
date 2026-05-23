@@ -10,6 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { UsersService } from '../../core/services/users.service';
 import { UserProfileDto } from '../../core/models/user.models';
 import { ChangePasswordDialogComponent } from './change-password-dialog/change-password-dialog';
+import { SportsCardComponent } from '../../shared/components/sports-card/sports-card';
 
 @Component({
   selector: 'app-profile',
@@ -21,6 +22,7 @@ import { ChangePasswordDialogComponent } from './change-password-dialog/change-p
     TextareaModule,
     TooltipModule,
     ChangePasswordDialogComponent,
+    SportsCardComponent,
   ],
   templateUrl: './profile.html',
   styleUrl: './profile.scss',

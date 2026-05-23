@@ -1,0 +1,156 @@
+.sports-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+
+  &__head {
+    margin-bottom: 1rem;
+
+    h3 {
+      font-size: 1.0625rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 0 0 0.25rem;
+    }
+  }
+
+  &__hint {
+    color: var(--text-muted);
+    font-size: 0.825rem;
+    margin: 0;
+  }
+
+  &__empty {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+}
+
+.sports-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sport-row {
+  display: grid;
+  grid-template-columns: minmax(140px, auto) 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-base);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 12%;
+    bottom: 12%;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--color-primary);
+  }
+
+  &[data-sport="Football"]::before   { background: var(--color-primary); }
+  &[data-sport="Tennis"]::before     { background: var(--color-warning, #F4C430); }
+  &[data-sport="Basketball"]::before { background: var(--color-danger); }
+
+  &__head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  &__details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  &__actions {
+    flex-shrink: 0;
+  }
+}
+
+.sport-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.level-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  width: fit-content;
+
+  &[data-level="Beginner"]    { background: color-mix(in srgb, var(--text-muted) 18%, transparent); color: var(--text-secondary); }
+  &[data-level="Intermediate"]{ background: color-mix(in srgb, var(--color-accent) 18%, transparent); color: var(--color-accent); }
+  &[data-level="Advanced"]    { background: color-mix(in srgb, var(--color-primary) 18%, transparent); color: var(--color-primary); }
+  &[data-level="Professional"]{ background: color-mix(in srgb, var(--color-warning, #F4C430) 22%, transparent); color: var(--color-warning, #F4C430); }
+}
+
+.favorite,
+.matches {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin: 0;
+
+  i { font-size: 0.78rem; color: var(--color-primary); }
+}
+
+.favorite__label {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.favorite__name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 560px) {
+  .sport-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+
+    &__actions { justify-self: flex-end; }
+  }
+}
+
+/* ── Edit dialog ─────────────────────────────────────────────────── */
+.dialog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+}
+
+.dialog-hint {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  margin: 0;
+}
