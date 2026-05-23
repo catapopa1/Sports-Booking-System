@@ -8,6 +8,7 @@ public interface IApplicationDbContext
 {
     DbSet<User> Users { get; }
     DbSet<Park> Parks { get; }
+    DbSet<ParkPhoto> ParkPhotos { get; }
     DbSet<Field> Fields { get; }
     DbSet<Booking> Bookings { get; }
     DbSet<BookingInvite> BookingInvites { get; }

@@ -2,6 +2,7 @@ using SportsBookingSystem.Application.Interfaces;
 using ErrorOr;
 using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Application.Common;
+using SportsBookingSystem.Application.Queries.Dtos;
 
 namespace SportsBookingSystem.Application.Queries.Parks.GetParkById;
 
@@ -24,7 +25,12 @@ public class GetParkByIdHandler : IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDt
                 p.Address,
                 p.City,
                 p.ManagerId,
-                p.Manager.FirstName + " " + p.Manager.LastName
+                p.Manager.FirstName + " " + p.Manager.LastName,
+                p.Photos
+                    .OrderByDescending(ph => ph.IsMain)
+                    .ThenBy(ph => ph.OrderIndex)
+                    .Select(ph => new ParkPhotoDto(ph.Id, ph.Url, ph.IsMain, ph.OrderIndex))
+                    .ToList()
             ))
             .FirstOrDefaultAsync(ct);
 

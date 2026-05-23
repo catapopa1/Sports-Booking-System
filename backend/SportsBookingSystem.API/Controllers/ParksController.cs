@@ -5,6 +5,9 @@ using SportsBookingSystem.API.Requests;
 using SportsBookingSystem.Application.Commands.Fields.CreateField;
 using SportsBookingSystem.Application.Commands.Parks.CreatePark;
 using SportsBookingSystem.Application.Commands.Parks.DeletePark;
+using SportsBookingSystem.Application.Commands.Parks.Photos.DeleteParkPhoto;
+using SportsBookingSystem.Application.Commands.Parks.Photos.SetMainParkPhoto;
+using SportsBookingSystem.Application.Commands.Parks.Photos.UploadParkPhoto;
 using SportsBookingSystem.Application.Commands.Parks.UpdatePark;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Queries.Dtos;
@@ -24,6 +27,9 @@ public class ParksController : BaseController
     private readonly ICommandHandler<CreateFieldCommand, ErrorOr<int>> _createField;
     private readonly ICommandHandler<UpdateParkCommand,ErrorOr<Updated>> _updatePark;
     private readonly ICommandHandler<DeleteParkCommand, ErrorOr<Deleted>> _deletePark;
+    private readonly ICommandHandler<UploadParkPhotoCommand, ErrorOr<ParkPhotoDto>> _uploadParkPhoto;
+    private readonly ICommandHandler<DeleteParkPhotoCommand, ErrorOr<Deleted>> _deleteParkPhoto;
+    private readonly ICommandHandler<SetMainParkPhotoCommand, ErrorOr<Updated>> _setMainParkPhoto;
 
     private readonly IQueryHandler<GetAllParksQuery, ErrorOr<List<ParkSummaryDto>>> _getAllParks;
     private readonly IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDto>> _getParkById;
@@ -35,6 +41,9 @@ public class ParksController : BaseController
         ICommandHandler<CreateFieldCommand, ErrorOr<int>> createField,
         ICommandHandler<UpdateParkCommand, ErrorOr<Updated>> updatePark,
         ICommandHandler<DeleteParkCommand, ErrorOr<Deleted>> deletePark,
+        ICommandHandler<UploadParkPhotoCommand, ErrorOr<ParkPhotoDto>> uploadParkPhoto,
+        ICommandHandler<DeleteParkPhotoCommand, ErrorOr<Deleted>> deleteParkPhoto,
+        ICommandHandler<SetMainParkPhotoCommand, ErrorOr<Updated>> setMainParkPhoto,
         IQueryHandler<GetAllParksQuery, ErrorOr<List<ParkSummaryDto>>> getAllParks,
         IQueryHandler<GetParkByIdQuery, ErrorOr<ParkDto>> getParkById,
         IQueryHandler<GetFieldsByParkQuery, ErrorOr<List<FieldDto>>> getFieldsByPark,
@@ -44,6 +53,9 @@ public class ParksController : BaseController
         _createField = createField;
         _updatePark = updatePark;
         _deletePark = deletePark;
+        _uploadParkPhoto = uploadParkPhoto;
+        _deleteParkPhoto = deleteParkPhoto;
+        _setMainParkPhoto = setMainParkPhoto;
         _getAllParks = getAllParks;
         _getParkById = getParkById;
         _getFieldsByPark = getFieldsByPark;
@@ -120,5 +132,32 @@ public class ParksController : BaseController
         return result.Match(_ => NoContent(), Problem);
     }
 
+    [HttpPost("{parkId}/photos")]
+    [Authorize]
+    public async Task<IActionResult> UploadPhoto(int parkId, IFormFile file, CancellationToken ct)
+    {
+        if (file is null || file.Length == 0)
+            return Problem(new List<Error> { Error.Validation("File.Empty", "A photo file is required.") });
 
+        await using var stream = file.OpenReadStream();
+        var result = await _uploadParkPhoto.HandleAsync(
+            new UploadParkPhotoCommand(parkId, stream, file.FileName), ct);
+        return result.Match(Ok, Problem);
+    }
+
+    [HttpDelete("{parkId}/photos/{photoId}")]
+    [Authorize]
+    public async Task<IActionResult> DeletePhoto(int parkId, int photoId, CancellationToken ct)
+    {
+        var result = await _deleteParkPhoto.HandleAsync(new DeleteParkPhotoCommand(parkId, photoId), ct);
+        return result.Match(_ => NoContent(), Problem);
+    }
+
+    [HttpPut("{parkId}/photos/{photoId}/main")]
+    [Authorize]
+    public async Task<IActionResult> SetMainPhoto(int parkId, int photoId, CancellationToken ct)
+    {
+        var result = await _setMainParkPhoto.HandleAsync(new SetMainParkPhotoCommand(parkId, photoId), ct);
+        return result.Match(_ => Ok(), Problem);
+    }
 }

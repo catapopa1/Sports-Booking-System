@@ -20,6 +20,7 @@ public class AppDbContext: DbContext,IApplicationDbContext
 
     public DbSet<User> Users => Set<User>();
     public DbSet<Park> Parks => Set<Park>();
+    public DbSet<ParkPhoto> ParkPhotos => Set<ParkPhoto>();
     public DbSet<Field> Fields => Set<Field>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<BookingInvite> BookingInvites => Set<BookingInvite>();

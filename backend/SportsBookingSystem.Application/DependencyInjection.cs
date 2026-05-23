@@ -17,6 +17,9 @@ using SportsBookingSystem.Application.Commands.Notifications.MarkNotificationRea
 using SportsBookingSystem.Application.Commands.Parks;
 using SportsBookingSystem.Application.Commands.Parks.CreatePark;
 using SportsBookingSystem.Application.Commands.Parks.DeletePark;
+using SportsBookingSystem.Application.Commands.Parks.Photos.DeleteParkPhoto;
+using SportsBookingSystem.Application.Commands.Parks.Photos.SetMainParkPhoto;
+using SportsBookingSystem.Application.Commands.Parks.Photos.UploadParkPhoto;
 using SportsBookingSystem.Application.Commands.Parks.UpdatePark;
 using SportsBookingSystem.Application.Commands.Users.ChangePassword;
 using SportsBookingSystem.Application.Commands.Users.UpdateProfile;
@@ -59,6 +62,11 @@ public static class DependencyInjection
         services.AddScoped<IValidator<CreateParkCommand>, CreateParkCommandValidator>();
         services.AddScoped<ICommandHandler<UpdateParkCommand, ErrorOr<Updated>>, UpdateParkHandler>();
         services.AddScoped<ICommandHandler<DeleteParkCommand, ErrorOr<Deleted>>, DeleteParkHandler>();
+
+        // Park photos
+        services.AddScoped<ICommandHandler<UploadParkPhotoCommand, ErrorOr<ParkPhotoDto>>, UploadParkPhotoHandler>();
+        services.AddScoped<ICommandHandler<DeleteParkPhotoCommand, ErrorOr<Deleted>>, DeleteParkPhotoHandler>();
+        services.AddScoped<ICommandHandler<SetMainParkPhotoCommand, ErrorOr<Updated>>, SetMainParkPhotoHandler>();
 
         // Fields
         services.AddScoped<ICommandHandler<CreateFieldCommand, ErrorOr<int>>, CreateFieldHandler>();

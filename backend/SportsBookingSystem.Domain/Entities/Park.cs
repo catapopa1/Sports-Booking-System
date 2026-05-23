@@ -11,7 +11,8 @@ public class Park : BaseEntity,ISoftDeletable
     public User Manager { get; set; } = null!;
 
     public ICollection<Field> Fields { get; set; } = [];
-    
+    public ICollection<ParkPhoto> Photos { get; set; } = [];
+
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
 }

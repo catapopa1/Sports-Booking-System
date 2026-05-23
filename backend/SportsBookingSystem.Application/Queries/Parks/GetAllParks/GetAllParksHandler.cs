@@ -21,7 +21,8 @@ public class GetAllParksHandler : IQueryHandler<GetAllParksQuery,ErrorOr<List<Pa
                 p.Id,
                 p.Name,
                 p.City,
-                p.Fields.Count))
+                p.Fields.Count,
+                p.Photos.Where(ph => ph.IsMain).Select(ph => ph.Url).FirstOrDefault()))
             .ToListAsync(ct);
 
         return parks;
