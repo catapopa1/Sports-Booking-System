@@ -60,7 +60,11 @@
     <div class="park-grid">
       @for (park of filteredParks(); track park.id) {
         <a class="park-card" [routerLink]="['/parks', park.id]">
-          <div class="card-banner"></div>
+          <div class="card-banner" [class.has-photo]="park.mainPhotoUrl">
+            @if (park.mainPhotoUrl) {
+              <img [src]="absoluteUrl(park.mainPhotoUrl)" alt="" class="card-photo" />
+            }
+          </div>
           <div class="card-body">
             <h2 class="park-name">{{ park.name }}</h2>
             <p class="park-city">

@@ -5,6 +5,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { SelectModule } from 'primeng/select';
 import { SkeletonModule } from 'primeng/skeleton';
 import { ButtonModule } from 'primeng/button';
+import { environment } from '../../../../environments/environment';
 import { ParksService } from '../../../core/services/parks.service';
 import { ParkSummaryDto } from '../../../core/models/park.models';
 
@@ -61,5 +62,11 @@ export class ParksListComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  absoluteUrl(url: string | null): string | null {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return `${environment.apiBaseUrl}${url.startsWith('/') ? url : '/' + url}`;
   }
 }

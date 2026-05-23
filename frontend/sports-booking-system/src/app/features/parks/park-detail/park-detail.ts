@@ -1,8 +1,13 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
+import { GalleriaModule } from 'primeng/galleria';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { environment } from '../../../../environments/environment';
+import { AuthService } from '../../../core/services/auth.service';
 import { ParksService } from '../../../core/services/parks.service';
 import { ParkDto, FieldDto } from '../../../core/models/park.models';
 
@@ -20,22 +25,54 @@ import { MagneticDirective } from '../../../shared/directives/magnetic.directive
   selector: 'app-park-detail',
   standalone: true,
   imports: [
-    RouterLink, ButtonModule, SkeletonModule, TooltipModule,
+    RouterLink, ButtonModule, SkeletonModule, TooltipModule, GalleriaModule, ConfirmDialogModule,
     MeshGradientComponent, SpotlightCardComponent, ShimmerButtonComponent,
     SportBall3DComponent, FieldSchematicComponent, CountUpComponent, GradientTextComponent,
     RevealOnScrollDirective, MagneticDirective
   ],
+  providers: [ConfirmationService],
   templateUrl: './park-detail.html',
   styleUrl: './park-detail.scss',
 })
 export class ParkDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly parksService = inject(ParksService);
+  private readonly auth = inject(AuthService);
+  private readonly toast = inject(MessageService);
+  private readonly confirm = inject(ConfirmationService);
 
   readonly park = signal<ParkDto | null>(null);
   readonly fields = signal<FieldDto[]>([]);
   readonly loading = signal<boolean>(true);
   readonly error = signal<string | null>(null);
+  readonly uploadingPhoto = signal<boolean>(false);
+  readonly photoBusyId = signal<number | null>(null);
+
+  readonly lightboxVisible = signal<boolean>(false);
+  readonly lightboxIndex = signal<number>(0);
+  readonly photosExpanded = signal<boolean>(false);
+
+  readonly PHOTOS_COLLAPSED_LIMIT = 4;
+
+  readonly visiblePhotos = computed(() => {
+    const photos = this.park()?.photos ?? [];
+    return this.photosExpanded() ? photos : photos.slice(0, this.PHOTOS_COLLAPSED_LIMIT);
+  });
+
+  readonly canManagePhotos = computed(() => {
+    const p = this.park();
+    if (!p) return false;
+    return this.auth.role() === 'Admin' || p.managerId === this.auth.userId();
+  });
+
+  openLightbox(index: number): void {
+    this.lightboxIndex.set(index);
+    this.lightboxVisible.set(true);
+  }
+
+  togglePhotosExpanded(): void {
+    this.photosExpanded.update(v => !v);
+  }
 
   /** Pick the most-common sport in the park's fields — used to flavour the hero watermark. */
   readonly dominantSport = computed<string>(() => {
@@ -87,5 +124,69 @@ export class ParkDetailComponent {
     } finally {
       this.loading.set(false);
     }
+  }
+
+  absoluteUrl(url: string | null | undefined): string | null {
+    if (!url) return null;
+    if (url.startsWith('http')) return url;
+    return `${environment.apiBaseUrl}${url.startsWith('/') ? url : '/' + url}`;
+  }
+
+  async onPhotoSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    const park = this.park();
+    if (!file || !park) return;
+
+    if (!file.type.startsWith('image/')) {
+      this.toast.add({ severity: 'warn', summary: 'Invalid file', detail: 'Please choose an image file.' });
+      input.value = '';
+      return;
+    }
+
+    this.uploadingPhoto.set(true);
+    try {
+      await this.parksService.uploadPhoto(park.id, file);
+      this.toast.add({ severity: 'success', summary: 'Photo uploaded' });
+      await this.load(park.id);
+    } finally {
+      this.uploadingPhoto.set(false);
+      input.value = '';
+    }
+  }
+
+  async setMain(photoId: number): Promise<void> {
+    const park = this.park();
+    if (!park) return;
+    this.photoBusyId.set(photoId);
+    try {
+      await this.parksService.setMainPhoto(park.id, photoId);
+      this.toast.add({ severity: 'success', summary: 'Main photo updated' });
+      await this.load(park.id);
+    } finally {
+      this.photoBusyId.set(null);
+    }
+  }
+
+  deletePhoto(photoId: number): void {
+    const park = this.park();
+    if (!park) return;
+    this.confirm.confirm({
+      header: 'Delete photo',
+      message: 'Remove this photo from the gallery? This cannot be undone.',
+      acceptLabel: 'Delete',
+      rejectLabel: 'Cancel',
+      acceptButtonStyleClass: 'p-button-danger',
+      accept: async () => {
+        this.photoBusyId.set(photoId);
+        try {
+          await this.parksService.deletePhoto(park.id, photoId);
+          this.toast.add({ severity: 'success', summary: 'Photo deleted' });
+          await this.load(park.id);
+        } finally {
+          this.photoBusyId.set(null);
+        }
+      },
+    });
   }
 }

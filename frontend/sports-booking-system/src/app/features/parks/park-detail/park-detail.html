@@ -78,6 +78,117 @@
       </div>
     </section>
 
+    @if (park()!.photos.length > 0 || canManagePhotos()) {
+      <section class="photos-section">
+        <header class="photos-section__head">
+          <h3>Photos</h3>
+          @if (canManagePhotos()) {
+            <label class="upload-btn" [class.uploading]="uploadingPhoto()">
+              @if (uploadingPhoto()) {
+                <i class="pi pi-spin pi-spinner"></i>
+                <span>Uploading…</span>
+              } @else {
+                <i class="pi pi-upload"></i>
+                <span>Upload photo</span>
+              }
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                (change)="onPhotoSelected($event)"
+                [disabled]="uploadingPhoto()"
+              />
+            </label>
+          }
+        </header>
+
+        @if (park()!.photos.length === 0) {
+          <p class="photos-section__empty">No photos yet. Upload one to set the cover image.</p>
+        } @else {
+          <div class="photo-tile-grid">
+            @for (photo of visiblePhotos(); track photo.id; let i = $index) {
+              <div class="photo-tile" [class.is-main]="photo.isMain">
+                <button
+                  type="button"
+                  class="photo-tile__btn"
+                  (click)="openLightbox(i)"
+                  [attr.aria-label]="'Open photo ' + (i + 1)">
+                  <img [src]="absoluteUrl(photo.url)" alt="" />
+                </button>
+                @if (photo.isMain) {
+                  <span class="main-pill" aria-hidden="true">
+                    <i class="pi pi-star-fill"></i> Main
+                  </span>
+                }
+                @if (canManagePhotos()) {
+                  <div class="photo-tile__actions">
+                    @if (!photo.isMain) {
+                      <button
+                        type="button"
+                        class="tile-action"
+                        pTooltip="Set as main"
+                        tooltipPosition="top"
+                        [disabled]="photoBusyId() === photo.id"
+                        (click)="setMain(photo.id)">
+                        <i class="pi pi-star"></i>
+                      </button>
+                    }
+                    <button
+                      type="button"
+                      class="tile-action danger"
+                      pTooltip="Delete"
+                      tooltipPosition="top"
+                      [disabled]="photoBusyId() === photo.id"
+                      (click)="deletePhoto(photo.id)">
+                      <i class="pi pi-trash"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          @if (park()!.photos.length > PHOTOS_COLLAPSED_LIMIT) {
+            <button type="button" class="show-more-btn" (click)="togglePhotosExpanded()">
+              @if (photosExpanded()) {
+                <i class="pi pi-chevron-up"></i>
+                <span>Show less</span>
+              } @else {
+                <i class="pi pi-chevron-down"></i>
+                <span>Show all {{ park()!.photos.length }} photos</span>
+              }
+            </button>
+          }
+        }
+      </section>
+
+      @if (canManagePhotos()) {
+        <p-confirmDialog />
+      }
+
+      @if (park()!.photos.length > 0) {
+        <p-galleria
+          [value]="park()!.photos"
+          [visible]="lightboxVisible()"
+          (visibleChange)="lightboxVisible.set($event)"
+          [activeIndex]="lightboxIndex()"
+          (activeIndexChange)="lightboxIndex.set($event)"
+          [fullScreen]="true"
+          [circular]="true"
+          [showItemNavigators]="park()!.photos.length > 1"
+          [showThumbnails]="park()!.photos.length > 1"
+          [showIndicatorsOnItem]="false"
+          styleClass="park-lightbox">
+          <ng-template pTemplate="item" let-photo>
+            <img [src]="absoluteUrl(photo.url)" alt="" class="lightbox-img" />
+          </ng-template>
+          <ng-template pTemplate="thumbnail" let-photo>
+            <img [src]="absoluteUrl(photo.url)" alt="" class="lightbox-thumb" />
+          </ng-template>
+        </p-galleria>
+      }
+    }
+
     <h3 class="section-title">
       <span>Available fields</span>
       <span class="section-line" aria-hidden="true"></span>

@@ -1,10 +1,18 @@
 export type SportType = 'Football' | 'Tennis' | 'Basketball'
 
+export interface ParkPhotoDto {
+  id: number;
+  url: string;
+  isMain: boolean;
+  orderIndex: number;
+}
+
 export interface ParkSummaryDto {
   id: number;
   name: string;
   city: string;
   fieldCount: number;
+  mainPhotoUrl: string | null;
 }
 
 export interface ParkDto {
@@ -14,6 +22,7 @@ export interface ParkDto {
   city: string;
   managerId: number;
   managerName: string;
+  photos: ParkPhotoDto[];
 }
 
 export interface FieldDto {
