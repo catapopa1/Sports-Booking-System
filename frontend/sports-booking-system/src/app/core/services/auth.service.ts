@@ -32,6 +32,15 @@ export class AuthService {
       this._user.set(result);
     }
 
+    async googleLogin(idToken: string): Promise<void> {
+      const result = await firstValueFrom(
+        this.http.post<LoginResult>(`${this.base}/google`, { idToken })
+      );
+
+      localStorage.setItem('auth_user', JSON.stringify(result));
+      this._user.set(result);
+    }
+
     async register(request: RegisterRequest): Promise<{ id: number}> {
       return firstValueFrom(
         this.http.post<{ id:number }>(`${this.base}/register`,request)

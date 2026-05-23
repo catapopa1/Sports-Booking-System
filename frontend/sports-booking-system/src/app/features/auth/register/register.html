@@ -38,7 +38,7 @@
 
         <div class="field">
           <label for="password">Password</label>
-          <p-password id="password" formControlName="password" placeholder="Min. 8 characters" [toggleMask]="true" class="w-full" />
+          <p-password id="password" formControlName="password" placeholder="Min. 8 characters" [toggleMask]="true" class="w-full" [inputStyleClass]="'w-full'" />
           @if (form.controls.password.invalid && form.controls.password.touched) {
             <small class="error-hint">Password must be at least 8 characters.</small>
           }
@@ -46,6 +46,11 @@
 
         <p-button type="submit" label="Create account" fluid [loading]="loading()" [disabled]="form.invalid" class="submit-btn" />
       </form>
+
+      @if (googleClientId) {
+        <div class="auth-divider"><span>or</span></div>
+        <div class="google-btn-wrap" #googleBtn></div>
+      }
     </div>
 
     <div class="auth-footer">

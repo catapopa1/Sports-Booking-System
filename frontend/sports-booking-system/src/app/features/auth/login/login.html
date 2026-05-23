@@ -29,6 +29,11 @@
 
         <p-button type="submit" label="Sign in" fluid [loading]="loading()" [disabled]="form.invalid" class="submit-btn" />
       </form>
+
+      @if (googleClientId) {
+        <div class="auth-divider"><span>or</span></div>
+        <div class="google-btn-wrap" #googleBtn></div>
+      }
     </div>
 
     <div class="auth-footer">

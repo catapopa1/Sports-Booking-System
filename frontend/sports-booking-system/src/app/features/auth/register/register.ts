@@ -1,4 +1,4 @@
-import { Component , inject, signal } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, inject, signal, viewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ButtonModule } from 'primeng/button';
@@ -6,6 +6,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { MessageModule } from 'primeng/message';
 import { PasswordModule } from 'primeng/password';
 import { AuthService } from '../../../core/services/auth.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-register',
@@ -13,9 +14,13 @@ import { AuthService } from '../../../core/services/auth.service';
   templateUrl: './register.html',
   styleUrl: './register.scss',
 })
-export class RegisterComponent {
+export class RegisterComponent implements AfterViewInit {
   private auth = inject(AuthService);
   private router = inject(Router);
+  private zone = inject(NgZone);
+
+  readonly googleClientId = environment.googleClientId;
+  readonly googleBtn = viewChild<ElementRef<HTMLDivElement>>('googleBtn');
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -27,13 +32,43 @@ export class RegisterComponent {
     password: new FormControl('', [Validators.required, Validators.minLength(8)])
   });
 
-  async onSubmit(): Promise<void> {
-    if (this.form.invalid) 
+  ngAfterViewInit(): void {
+    this.tryRenderGoogleButton();
+  }
+
+  private tryRenderGoogleButton(attempt = 0): void {
+    if (!this.googleClientId) return;
+    const host = this.googleBtn()?.nativeElement;
+    if (!host) return;
+
+    if (typeof google === 'undefined' || !google.accounts?.id) {
+      if (attempt < 30) {
+        setTimeout(() => this.tryRenderGoogleButton(attempt + 1), 100);
+      }
       return;
-    
+    }
+
+    google.accounts.id.initialize({
+      client_id: this.googleClientId,
+      callback: resp => this.zone.run(() => this.handleGoogleCredential(resp.credential)),
+    });
+
+    google.accounts.id.renderButton(host, {
+      theme: 'outline',
+      size: 'large',
+      text: 'signup_with',
+      shape: 'pill',
+      width: 320,
+    });
+  }
+
+  async onSubmit(): Promise<void> {
+    if (this.form.invalid)
+      return;
+
     this.loading.set(true);
     this.error.set(null);
-    
+
     try {
       await this.auth.register({
         firstName: this.form.value.firstName!,
@@ -49,5 +84,16 @@ export class RegisterComponent {
     }
   }
 
-  
+  private async handleGoogleCredential(idToken: string): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+    try {
+      await this.auth.googleLogin(idToken);
+      this.router.navigate(['/parks']);
+    } catch {
+      this.error.set('Google sign-in failed. Please try again.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
 }
