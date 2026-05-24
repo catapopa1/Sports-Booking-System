@@ -1,0 +1,71 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Admin console</h1>
+      <p class="subtitle">Manage users and assign roles.</p>
+    </div>
+    <p-iconfield iconPosition="left" class="search-field">
+      <p-inputicon styleClass="pi pi-search" />
+      <input
+        type="text"
+        pInputText
+        placeholder="Search by name or email"
+        [ngModel]="query()"
+        (ngModelChange)="onSearchInput($event)"
+      />
+    </p-iconfield>
+  </header>
+
+  @if (loading() && items().length === 0) {
+    <div class="grid">
+      @for (_ of [1, 2, 3, 4, 5]; track $index) {
+        <p-skeleton height="4.5rem" styleClass="skel" />
+      }
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty-state">
+      <i class="pi pi-users"></i>
+      <h2>No users match that search</h2>
+      <p>Try a different name or clear the search to see everyone.</p>
+    </div>
+  } @else {
+    <ul class="grid">
+      @for (u of items(); track u.id) {
+        <li class="user-row">
+          <div class="avatar">{{ initials(u.fullName) }}</div>
+          <div class="identity">
+            <strong>{{ u.fullName }}</strong>
+            <span class="email">{{ u.email }}</span>
+          </div>
+          <div class="role-col">
+            @if (isSelf(u.id)) {
+              <span class="self-tag">This is you</span>
+            }
+            <p-select
+              [options]="roles"
+              optionLabel="label"
+              optionValue="value"
+              [ngModel]="u.role"
+              (ngModelChange)="onRoleChange(u, $event)"
+              [disabled]="isSelf(u.id) || isUpdating(u.id)"
+              [appendTo]="'body'"
+              styleClass="role-select"
+            />
+          </div>
+        </li>
+      }
+    </ul>
+
+    @if (totalCount() > pageSize()) {
+      <p-paginator
+        [first]="first()"
+        [rows]="pageSize()"
+        [totalRecords]="totalCount()"
+        [rowsPerPageOptions]="[20, 50, 100]"
+        (onPageChange)="onPageChange($event)"
+      />
+    }
+  }
+
+  <p-confirmDialog />
+</section>

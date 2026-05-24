@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 import { LayoutComponent } from './layout/layout';
 
 export const routes: Routes = [
@@ -52,6 +53,12 @@ export const routes: Routes = [
       {
         path: 'notifications',
         loadComponent: () => import('./features/notifications/notifications').then(m => m.NotificationsComponent)
+      },
+      {
+        path: 'admin',
+        canActivate: [roleGuard],
+        data: { role: 'Admin' },
+        loadComponent: () => import('./features/admin/admin-console/admin-console').then(m => m.AdminConsoleComponent)
       },
       {
         path: 'bookings/create/:fieldId',
