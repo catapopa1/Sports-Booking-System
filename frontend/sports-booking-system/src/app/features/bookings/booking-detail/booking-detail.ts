@@ -5,6 +5,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { ButtonModule } from 'primeng/button';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { SkeletonModule } from 'primeng/skeleton';
+import { AuthService } from '../../../core/services/auth.service';
 import { BookingsService } from '../../../core/services/bookings.service';
 import { BookingDto, BookingStatus } from '../../../core/models/booking.models';
 import { StatusChipComponent } from '../../../shared/components/status-chip/status-chip';
@@ -34,6 +35,7 @@ const CANCELLABLE_STATUSES: BookingStatus[] = [
 export class BookingDetailComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly auth = inject(AuthService);
   private readonly bookings = inject(BookingsService);
   private readonly toast = inject(MessageService);
   private readonly confirm = inject(ConfirmationService);
@@ -43,9 +45,14 @@ export class BookingDetailComponent {
   readonly loadError = signal(false);
   readonly cancelling = signal(false);
 
+  readonly isOrganizer = computed(() => {
+    const b = this.booking();
+    return b !== null && b.organizerId === this.auth.userId();
+  });
+
   readonly canCancel = computed(() => {
     const b = this.booking();
-    if (!b || this.cancelling()) return false;
+    if (!b || this.cancelling() || !this.isOrganizer()) return false;
     return CANCELLABLE_STATUSES.includes(b.status as BookingStatus);
   });
 

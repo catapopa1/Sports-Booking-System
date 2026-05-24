@@ -96,6 +96,25 @@
       opacity: 0.85;
     }
   }
+
+  .organizer-line {
+    color: var(--text-secondary);
+    margin-top: 0.125rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.875rem;
+
+    i {
+      font-size: 0.8rem;
+      opacity: 0.85;
+    }
+
+    strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+  }
 }
 
 .meta-grid {

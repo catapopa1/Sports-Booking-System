@@ -24,6 +24,12 @@
           <i class="pi pi-map-marker"></i>
           {{ b.parkName }}
         </p>
+        @if (!isOrganizer()) {
+          <p class="organizer-line">
+            <i class="pi pi-user"></i>
+            Organized by <strong>{{ b.organizerName }}</strong>
+          </p>
+        }
       </div>
       <app-status-chip [status]="b.status" />
     </header>

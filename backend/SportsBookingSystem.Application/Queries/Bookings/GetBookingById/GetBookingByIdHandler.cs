@@ -21,6 +21,7 @@ public class GetBookingByIdHandler : IQueryHandler<GetBookingByIdQuery, ErrorOr<
         var booking = await _dbContext.Bookings
             .Include(b => b.Field)
             .ThenInclude(f => f.Park)
+            .Include(b => b.Organizer)
             .Include(b => b.Invites)
             .ThenInclude(i => i.Player)
             .AsNoTracking()
@@ -42,6 +43,8 @@ public class GetBookingByIdHandler : IQueryHandler<GetBookingByIdQuery, ErrorOr<
             booking.FieldId,
             booking.Field.Name,
             booking.Field.Park.Name,
+            booking.OrganizerId,
+            $"{booking.Organizer.FirstName} {booking.Organizer.LastName}",
             booking.StartTime,
             booking.BookingType.ToString(),
             booking.Status.ToString(),

@@ -7,6 +7,8 @@ public record BookingDto(
     int FieldId,
     string FieldName,
     string ParkName,
+    int OrganizerId,
+    string OrganizerName,
     DateTimeOffset StartTime,
     string BookingType,
     string Status,

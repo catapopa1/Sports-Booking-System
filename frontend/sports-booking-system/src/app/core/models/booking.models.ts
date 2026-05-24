@@ -13,6 +13,8 @@ export interface BookingDto {
   fieldId: number;
   fieldName: string;
   parkName: string;
+  organizerId: number;
+  organizerName: string;
   startTime: string;
   bookingType: string;
   status: string;

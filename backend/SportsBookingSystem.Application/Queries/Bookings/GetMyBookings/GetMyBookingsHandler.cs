@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Application.Queries.Dtos;
+using SportsBookingSystem.Domain.Enums;
 
 namespace SportsBookingSystem.Application.Queries.Bookings.GetMyBookings;
 
@@ -19,8 +20,11 @@ public class GetMyBookingsHandler : IQueryHandler<GetMyBookingsQuery, ErrorOr<Pa
 
     public async Task<ErrorOr<PagedResult<BookingSummaryDto>>> HandleAsync(GetMyBookingsQuery query, CancellationToken ct = default)
     {
+        var userId = _currentUser.UserId;
+
         var baseQuery = _dbContext.Bookings
-            .Where(b => b.OrganizerId == _currentUser.UserId);
+            .Where(b => b.OrganizerId == userId
+                        || b.Invites.Any(i => i.PlayerId == userId && i.Status == InviteStatus.Accepted));
 
         var totalCount = await baseQuery.CountAsync(ct);
 
