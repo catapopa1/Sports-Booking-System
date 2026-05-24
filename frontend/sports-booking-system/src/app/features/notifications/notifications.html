@@ -1,0 +1,60 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Notifications</h1>
+      <p class="subtitle">Live updates from your bookings, invites, and friends.</p>
+    </div>
+    @if (hasUnreadOnPage()) {
+      <p-button
+        label="Mark all read"
+        icon="pi pi-check"
+        [outlined]="true"
+        [loading]="markingAll()"
+        (onClick)="markAllRead()"
+      />
+    }
+  </header>
+
+  @if (loading() && items().length === 0) {
+    <div class="grid">
+      @for (_ of [1, 2, 3, 4]; track $index) {
+        <p-skeleton height="4.5rem" styleClass="skel" />
+      }
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty-state">
+      <i class="pi pi-bell-slash"></i>
+      <h2>Nothing here yet</h2>
+      <p>When something happens — an invite, a booking confirmation, a friend request — it'll show up here.</p>
+    </div>
+  } @else {
+    <ul class="grid">
+      @for (n of items(); track n.id) {
+        <li class="notification-card" [class.unread]="!n.isRead" (click)="markRead(n)">
+          <div class="dot-col">
+            @if (!n.isRead) {
+              <span class="unread-dot" aria-label="Unread"></span>
+            }
+          </div>
+          <div class="body">
+            <div class="row-top">
+              <h3>{{ n.title }}</h3>
+              <time>{{ n.createdAt | date:'d MMM · HH:mm' }}</time>
+            </div>
+            <p class="message">{{ n.message }}</p>
+          </div>
+        </li>
+      }
+    </ul>
+
+    @if (totalCount() > pageSize()) {
+      <p-paginator
+        [first]="first()"
+        [rows]="pageSize()"
+        [totalRecords]="totalCount()"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        (onPageChange)="onPageChange($event)"
+      />
+    }
+  }
+</section>

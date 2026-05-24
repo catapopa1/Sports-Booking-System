@@ -49,6 +49,13 @@
             <span class="nav-badge">{{ bookings.pendingInvitesCount() }}</span>
           }
         }
+        @if (item.route === '/notifications' && notifications.unreadCount() > 0) {
+          @if (collapsed()) {
+            <span class="nav-dot" aria-hidden="true"></span>
+          } @else {
+            <span class="nav-badge">{{ notifications.unreadCount() }}</span>
+          }
+        }
       </a>
     }
   </nav>

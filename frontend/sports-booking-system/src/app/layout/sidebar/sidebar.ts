@@ -5,6 +5,7 @@ import { TooltipModule } from 'primeng/tooltip';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
 import { BookingsService } from '../../core/services/bookings.service';
+import { NotificationsService } from '../../core/services/notifications.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { UsersService } from '../../core/services/users.service';
 
@@ -26,6 +27,7 @@ export class SidebarComponent {
   readonly auth = inject(AuthService);
   readonly theme = inject(ThemeService);
   readonly bookings = inject(BookingsService);
+  readonly notifications = inject(NotificationsService);
   private readonly usersService = inject(UsersService);
   readonly collapsed = signal(false);
 
@@ -70,7 +72,7 @@ export class SidebarComponent {
   });
 
   constructor() {
-    // Load profile picture + pending-invite count whenever the user becomes logged in.
+    // Load profile picture + counters + open the SignalR connection whenever the user is logged in.
     effect(() => {
       const user = this.auth.user();
       if (user) {
@@ -84,10 +86,24 @@ export class SidebarComponent {
             this.fullName.set(null);
           });
         this.bookings.refreshInvitesCount();
+        this.notifications.refreshUnreadCount();
+        this.notifications.connect(user.token);
       } else {
         this.profilePictureUrl.set(null);
         this.fullName.set(null);
         this.bookings.clearInvitesCount();
+        this.notifications.clearUnread();
+        this.notifications.disconnect();
+      }
+    });
+
+    // When a notification arrives via SignalR and it relates to invites, bump that badge too.
+    effect(() => {
+      const last = this.notifications.lastReceived();
+      if (!last) return;
+      const t = last.title.toLowerCase();
+      if (t.includes('invite') || t.includes('confirmed') || t.includes('cancelled')) {
+        this.bookings.refreshInvitesCount();
       }
     });
   }

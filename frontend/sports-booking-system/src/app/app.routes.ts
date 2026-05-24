@@ -50,6 +50,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/bookings/invites/invites').then(m => m.InvitesComponent)
       },
       {
+        path: 'notifications',
+        loadComponent: () => import('./features/notifications/notifications').then(m => m.NotificationsComponent)
+      },
+      {
         path: 'bookings/create/:fieldId',
         loadComponent: () => import('./features/bookings/create-booking/create-booking').then(m => m.CreateBookingComponent)
       },
