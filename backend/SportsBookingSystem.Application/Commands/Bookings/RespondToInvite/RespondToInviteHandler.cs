@@ -4,6 +4,7 @@ using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Domain.Enums;
 using SportsBookingSystem.Domain.Events;
+using SportsBookingSystem.Domain.Rules;
 
 namespace SportsBookingSystem.Application.Commands.Bookings.RespondToInvite;
 
@@ -25,6 +26,7 @@ public class RespondToInviteHandler : ICommandHandler<RespondToInviteCommand, Er
 
         var invite = await _dbContext.BookingInvites
             .Include(bi => bi.Booking)
+                .ThenInclude(b => b.Field)
             .FirstOrDefaultAsync(bi => bi.BookingId == command.BookingId && bi.PlayerId == _currentUser.UserId, ct);
 
         if (invite is null)
@@ -33,10 +35,33 @@ public class RespondToInviteHandler : ICommandHandler<RespondToInviteCommand, Er
         if (invite.Status != InviteStatus.Pending)
             return Error.Conflict("Invite.AlreadyResponded", "You have already responded to this invite.");
 
-        invite.Status = command.Response;
         var booking = invite.Booking;
 
-        if (command.Response == InviteStatus.Declined)
+        if (booking.Status is BookingStatus.Confirmed or BookingStatus.Cancelled or BookingStatus.TimedOut)
+            return Error.Conflict("Booking.InvalidStatus",
+                $"Cannot respond to an invite on a booking that is already {booking.Status}.");
+
+        invite.Status = command.Response;
+
+        var allInvites = await _dbContext.BookingInvites
+            .Where(bi => bi.BookingId == command.BookingId)
+            .ToListAsync(ct);
+
+        var accepted = allInvites.Count(bi => bi.Status == InviteStatus.Accepted);
+        var pending  = allInvites.Count(bi => bi.Status == InviteStatus.Pending);
+
+        var minRequired = BookingRules.MinRequiredPlayers(booking.Field.SportType, booking.BookingType);
+
+        // Organizer always plays, so total accepters = 1 (organizer) + accepted invitees.
+        var totalAcceptors = 1 + accepted;
+        var maxReachable   = totalAcceptors + pending;
+
+        if (totalAcceptors >= minRequired)
+        {
+            booking.Status = BookingStatus.Confirmed;
+            booking.RaiseDomainEvent(new BookingConfirmedEvent(booking.Id));
+        }
+        else if (maxReachable < minRequired)
         {
             booking.Status = BookingStatus.Cancelled;
             booking.RaiseDomainEvent(new BookingCancelledEvent(booking.Id));
@@ -44,15 +69,6 @@ public class RespondToInviteHandler : ICommandHandler<RespondToInviteCommand, Er
         else
         {
             booking.Status = BookingStatus.PendingPlayerConfirmations;
-
-            var anyStillPending = await _dbContext.BookingInvites.AnyAsync(
-                bi => bi.BookingId == command.BookingId && bi.Status == InviteStatus.Pending, ct);
-
-            if (!anyStillPending)
-            {
-                booking.Status = BookingStatus.PendingManagerApproval;
-                booking.RaiseDomainEvent(new AllPlayersAcceptedEvent(booking.Id));
-            }
         }
 
         await _dbContext.SaveChangesAsync(ct);

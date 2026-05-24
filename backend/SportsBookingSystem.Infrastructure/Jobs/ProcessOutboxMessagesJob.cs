@@ -34,11 +34,9 @@ public class ProcessOutboxMessagesJob
             {
                 IDomainEvent? domainEvent = message.Type switch
                 {
-                    nameof(AllPlayersAcceptedEvent) => JsonSerializer.Deserialize<AllPlayersAcceptedEvent>(
-                        message.Payload),
                     nameof(BookingConfirmedEvent) => JsonSerializer.Deserialize<BookingConfirmedEvent>(message.Payload),
                     nameof(BookingCancelledEvent) => JsonSerializer.Deserialize<BookingCancelledEvent>(message.Payload),
-                    nameof(BookingTimedOutEvent)     => JsonSerializer.Deserialize<BookingTimedOutEvent>(message.Payload), 
+                    nameof(BookingTimedOutEvent)  => JsonSerializer.Deserialize<BookingTimedOutEvent>(message.Payload),
                     _ => null
                 };
 
@@ -64,42 +62,12 @@ public class ProcessOutboxMessagesJob
 
     private async Task DispatchAsync(IDomainEvent domainEvent)
     {
-        if (domainEvent is AllPlayersAcceptedEvent allPlayersAccepted)
-            await HandleAsync(allPlayersAccepted);
-        else if (domainEvent is BookingConfirmedEvent bookingConfirmed)
+        if (domainEvent is BookingConfirmedEvent bookingConfirmed)
             await HandleAsync(bookingConfirmed);
         else if (domainEvent is BookingCancelledEvent bookingCancelled)
             await HandleAsync(bookingCancelled);
         else if (domainEvent is BookingTimedOutEvent bookingTimedOut)
             await HandleAsync(bookingTimedOut);
-    }
-
-
-    private async Task HandleAsync(AllPlayersAcceptedEvent e)
-    {
-        var booking = await _dbContext.Bookings
-            .AsNoTracking()
-            .Include(b => b.Field)
-            .ThenInclude(f => f.Park)
-            .FirstOrDefaultAsync(b => b.Id == e.BookingId);
-
-        if (booking is null) return;
-        
-        var recipientId = booking.Field.Park.ManagerId;
-        var createdAt = DateTimeOffset.UtcNow;
-        var title = "Booking Awaiting Approval";
-        var message = $"Booking #{e.BookingId} for field '{booking.Field.Name}' is awaiting your approval.";
-
-        await _dbContext.Notifications.AddAsync(new Notification
-        {
-            UserId = recipientId,
-            Title = title,
-            Message = message,
-            IsRead = false,
-            CreatedAt = createdAt
-        });
-
-        await _notificationPusher.PushAsync(recipientId, new NotificationDto(0, title, message, false, createdAt));
     }
 
     private async Task HandleAsync(BookingConfirmedEvent e)

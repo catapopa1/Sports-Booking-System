@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using SportsBookingSystem.Application.Interfaces;
 using SportsBookingSystem.Domain.Entities;
 using SportsBookingSystem.Domain.Enums;
+using SportsBookingSystem.Domain.Rules;
 
 namespace SportsBookingSystem.Application.Commands.Bookings.CreateBooking;
 
@@ -45,14 +46,7 @@ public class CreateBookingHandler : ICommandHandler<CreateBookingCommand, ErrorO
                 $"Booking type {command.BookingType} does not match field sport type {field.SportType}.");
 
         var inviteCount = command.InvitedPlayersIds.Count;
-        var (minInvites, maxInvites) = (field.SportType, command.BookingType) switch
-        {
-            (SportType.Football,   _)                       => (5, 11),
-            (SportType.Tennis,     _)                       => (1, 3),
-            (SportType.Basketball, BookingType.FullCourt)   => (3, 9),
-            (SportType.Basketball, BookingType.HalfCourt)   => (1, 5),
-            _                                               => (0, 0)
-        };
+        var (minInvites, maxInvites) = BookingRules.InviteRange(field.SportType, command.BookingType);
 
         if (inviteCount < minInvites || inviteCount > maxInvites)
             return Error.Validation("Booking.InvalidPlayerCount",

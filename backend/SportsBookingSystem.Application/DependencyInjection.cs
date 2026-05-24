@@ -2,7 +2,6 @@ using ErrorOr;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using SportsBookingSystem.Application.Commands.Auth.Register;
-using SportsBookingSystem.Application.Commands.Bookings.ApproveBooking;
 using SportsBookingSystem.Application.Commands.Bookings.CancelBooking;
 using SportsBookingSystem.Application.Commands.Bookings.CreateBooking;
 using SportsBookingSystem.Application.Commands.Bookings.RespondToInvite;
@@ -37,7 +36,6 @@ using SportsBookingSystem.Application.Queries.Friendships.GetSentRequests;
 using SportsBookingSystem.Application.Queries.Bookings.GetBookingById;
 using SportsBookingSystem.Application.Queries.Bookings.GetMyBookings;
 using SportsBookingSystem.Application.Queries.Bookings.GetMyInvites;
-using SportsBookingSystem.Application.Queries.Bookings.GetPendingApprovals;
 using SportsBookingSystem.Application.Queries.Notifications.GetMyNotifications;
 using SportsBookingSystem.Application.Queries.Parks.GetAllParks;
 using SportsBookingSystem.Application.Queries.Parks.GetFieldsByPark;
@@ -99,16 +97,14 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<UpsertSportProfileCommand, ErrorOr<Updated>>, UpsertSportProfileHandler>();
         services.AddScoped<IValidator<UpsertSportProfileCommand>, UpsertSportProfileValidator>();
 
-        // Bookings 
+        // Bookings
         services.AddScoped<ICommandHandler<CreateBookingCommand, ErrorOr<int>>, CreateBookingHandler>();
         services.AddScoped<ICommandHandler<RespondToInviteCommand, ErrorOr<Updated>>, RespondToInviteHandler>();
-        services.AddScoped<ICommandHandler<ApproveBookingCommand, ErrorOr<Updated>>, ApproveBookingHandler>();
         services.AddScoped<ICommandHandler<CancelBookingCommand, ErrorOr<Updated>>, CancelBookingHandler>();
         services.AddScoped<IValidator<CreateBookingCommand>, CreateBookingValidator>();
         services.AddScoped<IQueryHandler<GetBookingByIdQuery, ErrorOr<BookingDto>>, GetBookingByIdHandler>();
         services.AddScoped<IQueryHandler<GetMyBookingsQuery, ErrorOr<PagedResult<BookingSummaryDto>>>, GetMyBookingsHandler>();
         services.AddScoped<IQueryHandler<GetMyInvitesQuery, ErrorOr<List<InviteNotificationDto>>>, GetMyInvitesHandler>();
-        services.AddScoped<IQueryHandler<GetPendingApprovalsQuery, ErrorOr<List<BookingSummaryDto>>>, GetPendingApprovalsHandler>();
         services.AddScoped<IQueryHandler<GetParkStatsQuery, ErrorOr<ParkStatsDto>>, GetParkStatsQueryHandler>();
         
         // Notifications
