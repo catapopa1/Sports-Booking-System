@@ -63,20 +63,29 @@
 
           <div class="hour-wrap">
             <h4 class="sub-label">Start time</h4>
-            <div class="hour-grid">
-              @for (h of hours; track h) {
-                <button
-                  type="button"
-                  class="hour-btn"
-                  [class.selected]="formValue().hour === h"
-                  (click)="pickHour(h)"
-                >
-                  {{ hourLabel(h) }}
-                </button>
+
+            @if (!formValue().date) {
+              <p class="hint">Pick a date first.</p>
+            } @else if (loadingAvailability()) {
+              <p class="hint">Checking availability…</p>
+            } @else if (availableHours().length === 0) {
+              <p class="hint">No free slots on this date — try another day.</p>
+            } @else {
+              <div class="hour-grid">
+                @for (h of availableHours(); track h) {
+                  <button
+                    type="button"
+                    class="hour-btn"
+                    [class.selected]="formValue().hour === h"
+                    (click)="pickHour(h)"
+                  >
+                    {{ hourLabel(h) }}
+                  </button>
+                }
+              </div>
+              @if (formValue().hour === null || formValue().hour === undefined) {
+                <p class="hint">Choose a starting hour</p>
               }
-            </div>
-            @if (formValue().hour === null || formValue().hour === undefined) {
-              <p class="hint">Choose a starting hour</p>
             }
           </div>
         </div>

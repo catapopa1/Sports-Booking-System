@@ -11,7 +11,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { SkeletonModule } from 'primeng/skeleton';
 import { environment } from '../../../../environments/environment';
 import { BookingsService } from '../../../core/services/bookings.service';
-import { FieldsService } from '../../../core/services/fields.service';
+import { FieldsService, FieldOccupancySlot } from '../../../core/services/fields.service';
 import { FriendshipsService } from '../../../core/services/friendships.service';
 import { BookingType } from '../../../core/models/booking.models';
 import { FieldDto, SportType } from '../../../core/models/park.models';
@@ -48,6 +48,8 @@ export class CreateBookingComponent {
   readonly loading = signal<boolean>(true);
   readonly loadError = signal<string | null>(null);
   readonly submitting = signal<boolean>(false);
+  readonly occupancy = signal<FieldOccupancySlot[]>([]);
+  readonly loadingAvailability = signal<boolean>(false);
 
   readonly minDate = new Date();
   readonly hours = Array.from({ length: 17 }, (_, i) => 6 + i); // 06:00 to 22:00
@@ -129,6 +131,48 @@ export class CreateBookingComponent {
     return d;
   });
 
+  /** Hours blocked by existing bookings on the chosen date, given the current bookingType. */
+  readonly disabledHours = computed<Set<number>>(() => {
+    const slots = this.occupancy();
+    const bt = this.formValue().bookingType;
+    const isBasketball = this.isBasketball();
+
+    if (slots.length === 0) return new Set();
+
+    if (!isBasketball) {
+      return new Set(slots.map(s => new Date(s.startTime).getHours()));
+    }
+
+    const blocked = new Set<number>();
+    const halfCountsByHour = new Map<number, number>();
+
+    for (const s of slots) {
+      const h = new Date(s.startTime).getHours();
+      if (s.bookingType === 'FullCourt') {
+        blocked.add(h);
+      } else if (s.bookingType === 'HalfCourt') {
+        halfCountsByHour.set(h, (halfCountsByHour.get(h) ?? 0) + 1);
+      }
+    }
+
+    // FullCourt: any existing booking (full or half) blocks the slot.
+    // HalfCourt: a FullCourt blocks; two existing HalfCourts also block.
+    if (bt === 'FullCourt') {
+      for (const h of halfCountsByHour.keys()) blocked.add(h);
+    } else if (bt === 'HalfCourt') {
+      for (const [h, count] of halfCountsByHour) {
+        if (count >= 2) blocked.add(h);
+      }
+    }
+
+    return blocked;
+  });
+
+  readonly availableHours = computed(() => {
+    const disabled = this.disabledHours();
+    return this.hours.filter(h => !disabled.has(h));
+  });
+
   readonly friendsShortBy = computed(() => {
     const need = this.minInvites();
     if (need === 0) return 0;
@@ -147,9 +191,49 @@ export class CreateBookingComponent {
   constructor() {
     this.form.controls.bookingType.valueChanges
       .pipe(takeUntilDestroyed())
-      .subscribe(() => this.form.controls.invitedPlayerIds.setValue([]));
+      .subscribe(() => {
+        this.form.controls.invitedPlayerIds.setValue([]);
+        this.clearHourIfDisabled();
+      });
+
+    this.form.controls.date.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(date => {
+        this.form.controls.hour.setValue(null);
+        this.loadAvailability(date);
+      });
 
     this.load();
+  }
+
+  private async loadAvailability(date: Date | null): Promise<void> {
+    const fieldId = this.field()?.id;
+    if (!date || !fieldId) {
+      this.occupancy.set([]);
+      return;
+    }
+
+    const from = new Date(date);
+    from.setHours(0, 0, 0, 0);
+    const to = new Date(from);
+    to.setDate(to.getDate() + 1);
+
+    this.loadingAvailability.set(true);
+    try {
+      const slots = await this.fields.getAvailability(fieldId, from, to);
+      this.occupancy.set(slots);
+    } catch {
+      this.occupancy.set([]);
+    } finally {
+      this.loadingAvailability.set(false);
+    }
+  }
+
+  private clearHourIfDisabled(): void {
+    const current = this.form.controls.hour.value;
+    if (current !== null && this.disabledHours().has(current)) {
+      this.form.controls.hour.setValue(null);
+    }
   }
 
   async load(): Promise<void> {

@@ -29,6 +29,7 @@ using SportsBookingSystem.Application.Common;
 using SportsBookingSystem.Application.Queries.Auth.GoogleSignIn;
 using SportsBookingSystem.Application.Queries.Auth.Login;
 using SportsBookingSystem.Application.Queries.Dtos;
+using SportsBookingSystem.Application.Queries.Fields.GetFieldAvailability;
 using SportsBookingSystem.Application.Queries.Fields.GetFieldById;
 using SportsBookingSystem.Application.Queries.Friendships.GetMyFriends;
 using SportsBookingSystem.Application.Queries.Friendships.GetPendingRequests;
@@ -73,6 +74,7 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateFieldCommand, ErrorOr<int>>, CreateFieldHandler>();
         services.AddScoped<IQueryHandler<GetFieldsByParkQuery, ErrorOr<List<FieldDto>>>, GetFieldsByParkHandler>();
         services.AddScoped<IQueryHandler<GetFieldByIdQuery, ErrorOr<FieldDto>>, GetFieldByIdHandler>();
+        services.AddScoped<IQueryHandler<GetFieldAvailabilityQuery, ErrorOr<List<FieldOccupancySlotDto>>>, GetFieldAvailabilityHandler>();
         services.AddScoped<IValidator<CreateFieldCommand>, CreateFieldCommandValidator>();
         services.AddScoped<ICommandHandler<UpdateFieldCommand, ErrorOr<Updated>>, UpdateFieldHandler>();
         services.AddScoped<ICommandHandler<DeleteFieldCommand, ErrorOr<Deleted>>, DeleteFieldHandler>();
