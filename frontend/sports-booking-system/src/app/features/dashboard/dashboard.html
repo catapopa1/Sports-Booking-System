@@ -1,4 +1,124 @@
-<div>
-  <h1>Welcome back, {{ auth.user()?.email }}</h1>
-  <p>Your SportBook dashboard</p>
-</div>
+<section class="page">
+  <header class="hello">
+    <h1>Welcome back, {{ firstName() }}.</h1>
+    <p class="subtitle">Here's what's happening on Pitchr today.</p>
+  </header>
+
+  @if (loading()) {
+    <div class="grid">
+      <p-skeleton height="11rem" styleClass="skel hero-skel" />
+      <div class="stats-row">
+        <p-skeleton height="5.5rem" styleClass="skel" />
+        <p-skeleton height="5.5rem" styleClass="skel" />
+        <p-skeleton height="5.5rem" styleClass="skel" />
+      </div>
+    </div>
+  } @else {
+    <!-- ─── Hero: next game ──────────────────────────────────── -->
+    @if (nextGame(); as g) {
+      <a class="hero-card" [routerLink]="['/bookings', g.id]">
+        <div class="hero-left">
+          <span class="eyebrow">Your next game</span>
+          <h2>{{ g.fieldName }}</h2>
+          <span class="hero-park">
+            <i class="pi pi-map-marker"></i>
+            {{ g.parkName }}
+          </span>
+        </div>
+        <div class="hero-right">
+          <app-status-chip [status]="g.status" />
+          <div class="hero-when">
+            <span class="hero-date">{{ g.startTime | date:'EEE, d MMM' }}</span>
+            <span class="hero-time">{{ g.startTime | date:'HH:mm' }} · 1 hour</span>
+          </div>
+          <span class="hero-price">{{ g.totalPrice | currency:'RON':'symbol-narrow':'1.0-0' }}</span>
+        </div>
+      </a>
+    } @else {
+      <div class="hero-card hero-empty">
+        <div class="hero-left">
+          <span class="eyebrow">Your next game</span>
+          <h2>Nothing on your calendar.</h2>
+          <p class="hero-empty-line">Find a park, pick a field, and invite some friends.</p>
+        </div>
+        <div class="hero-right">
+          <p-button label="Browse parks" icon="pi pi-map" routerLink="/parks" />
+        </div>
+      </div>
+    }
+
+    <!-- ─── Stats row ────────────────────────────────────────── -->
+    <div class="stats-row">
+      <a class="stat-card" routerLink="/invites">
+        <i class="pi pi-envelope"></i>
+        <span class="stat-value">{{ bookings.pendingInvitesCount() }}</span>
+        <span class="stat-label">Pending invites</span>
+      </a>
+      <a class="stat-card" routerLink="/notifications">
+        <i class="pi pi-bell"></i>
+        <span class="stat-value">{{ notifications.unreadCount() }}</span>
+        <span class="stat-label">Unread notifications</span>
+      </a>
+      <a class="stat-card" routerLink="/friends">
+        <i class="pi pi-users"></i>
+        <span class="stat-value">{{ friendsCount() }}</span>
+        <span class="stat-label">Friends</span>
+      </a>
+    </div>
+
+    <!-- ─── Two-column: invites preview + recent activity ────── -->
+    <div class="two-col">
+      <section class="panel">
+        <header class="panel-header">
+          <h3>Pending invites</h3>
+          @if (bookings.pendingInvitesCount() > 0) {
+            <a routerLink="/invites" class="panel-link">Open inbox <i class="pi pi-arrow-right"></i></a>
+          }
+        </header>
+        @if (recentInvites().length === 0) {
+          <p class="panel-empty">No one's invited you yet.</p>
+        } @else {
+          <ul class="panel-list">
+            @for (inv of recentInvites(); track inv.bookingId) {
+              <li>
+                <a class="panel-row" [routerLink]="['/bookings', inv.bookingId]">
+                  <div class="panel-row-main">
+                    <strong>{{ inv.fieldName }}</strong>
+                    <span class="muted">at {{ inv.parkName }}</span>
+                  </div>
+                  <span class="panel-row-meta">
+                    {{ inv.startTime | date:'d MMM · HH:mm' }}
+                  </span>
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+
+      <section class="panel">
+        <header class="panel-header">
+          <h3>Recent activity</h3>
+          <a routerLink="/notifications" class="panel-link">View all <i class="pi pi-arrow-right"></i></a>
+        </header>
+        @if (recentActivity().length === 0) {
+          <p class="panel-empty">Quiet for now.</p>
+        } @else {
+          <ul class="panel-list">
+            @for (n of recentActivity(); track n.id) {
+              <li>
+                <div class="panel-row activity-row" [class.unread]="!n.isRead">
+                  <div class="panel-row-main">
+                    <strong>{{ n.title }}</strong>
+                    <span class="muted">{{ n.message }}</span>
+                  </div>
+                  <span class="panel-row-meta">{{ n.createdAt | date:'d MMM · HH:mm' }}</span>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </section>
+    </div>
+  }
+</section>
