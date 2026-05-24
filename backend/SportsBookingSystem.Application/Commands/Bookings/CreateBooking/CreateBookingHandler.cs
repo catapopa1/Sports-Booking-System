@@ -44,14 +44,19 @@ public class CreateBookingHandler : ICommandHandler<CreateBookingCommand, ErrorO
             return Error.Conflict("Field.Conflict",
                 $"Booking type {command.BookingType} does not match field sport type {field.SportType}.");
 
-        if ((field.SportType == SportType.Football && command.InvitedPlayersIds.Count != 11) ||
-            (field.SportType == SportType.Basketball && command.BookingType == BookingType.FullCourt &&
-             command.InvitedPlayersIds.Count != 9) ||
-            (field.SportType == SportType.Basketball && command.BookingType == BookingType.HalfCourt &&
-             command.InvitedPlayersIds.Count != 5) ||
-            (field.SportType == SportType.Tennis &&
-             (command.InvitedPlayersIds.Count != 1 && command.InvitedPlayersIds.Count != 3)))
-            return Error.Validation("Booking.InvalidPlayerCount", "Number of invited players does not match the booking type.");
+        var inviteCount = command.InvitedPlayersIds.Count;
+        var (minInvites, maxInvites) = (field.SportType, command.BookingType) switch
+        {
+            (SportType.Football,   _)                       => (5, 11),
+            (SportType.Tennis,     _)                       => (1, 3),
+            (SportType.Basketball, BookingType.FullCourt)   => (3, 9),
+            (SportType.Basketball, BookingType.HalfCourt)   => (1, 5),
+            _                                               => (0, 0)
+        };
+
+        if (inviteCount < minInvites || inviteCount > maxInvites)
+            return Error.Validation("Booking.InvalidPlayerCount",
+                $"Invite count {inviteCount} is outside the allowed range {minInvites}-{maxInvites} for this booking.");
 
         var requiredPlayerCount = command.InvitedPlayersIds.Count + 1;
 

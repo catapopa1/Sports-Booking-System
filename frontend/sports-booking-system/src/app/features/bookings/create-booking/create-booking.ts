@@ -69,43 +69,48 @@ export class CreateBookingComponent {
     this.isBasketball() ? ['FullCourt', 'HalfCourt'] : ['Standard']
   );
 
-  readonly expectedInviteCounts = computed<number[]>(() => {
+  readonly inviteRange = computed<{ min: number; max: number }>(() => {
     const s = this.sport();
     const bt = this.formValue().bookingType;
-    if (s === 'Football') return [11];
-    if (s === 'Tennis') return [1, 3];
-    if (s === 'Basketball' && bt === 'FullCourt') return [9];
-    if (s === 'Basketball' && bt === 'HalfCourt') return [5];
-    return [];
+    if (s === 'Football') return { min: 5, max: 11 };
+    if (s === 'Tennis') return { min: 1, max: 3 };
+    if (s === 'Basketball' && bt === 'FullCourt') return { min: 3, max: 9 };
+    if (s === 'Basketball' && bt === 'HalfCourt') return { min: 1, max: 5 };
+    return { min: 0, max: 0 };
   });
 
-  readonly maxInvites = computed(() =>
-    this.expectedInviteCounts().length === 0 ? 0 : Math.max(...this.expectedInviteCounts())
-  );
+  readonly maxInvites = computed(() => this.inviteRange().max);
+  readonly minInvites = computed(() => this.inviteRange().min);
 
   readonly inviteCount = computed(() => this.formValue().invitedPlayerIds?.length ?? 0);
 
-  readonly invitesValid = computed(() => this.expectedInviteCounts().includes(this.inviteCount()));
+  readonly invitesValid = computed(() => {
+    const { min, max } = this.inviteRange();
+    const c = this.inviteCount();
+    return max > 0 && c >= min && c <= max;
+  });
 
   readonly canAddMoreInvites = computed(() => this.inviteCount() < this.maxInvites());
 
   readonly inviteHelperText = computed(() => {
     const s = this.sport();
     const bt = this.formValue().bookingType;
-    if (!s) return '';
-    if (s === 'Football') return 'Football needs exactly 11 friends to fill the pitch.';
-    if (s === 'Tennis') return 'Pick 1 friend for 1v1 or 3 friends for doubles.';
-    if (s === 'Basketball' && bt === 'FullCourt') return 'Full court needs 9 friends (5v5).';
-    if (s === 'Basketball' && bt === 'HalfCourt') return 'Half court needs 5 friends (3v3).';
+    const { min, max } = this.inviteRange();
+    if (!s || max === 0) return '';
+    const range = min === max ? `${min}` : `${min}–${max}`;
+    if (s === 'Football') return `Football needs ${range} friends (total ${min + 1}–${max + 1} players).`;
+    if (s === 'Tennis') return `Tennis needs ${range} friend${max === 1 ? '' : 's'} — 1v1 or doubles.`;
+    if (s === 'Basketball' && bt === 'FullCourt') return `Full court needs ${range} friends (total ${min + 1}–${max + 1}).`;
+    if (s === 'Basketball' && bt === 'HalfCourt') return `Half court needs ${range} friend${max === 1 ? '' : 's'} (total ${min + 1}–${max + 1}).`;
     return '';
   });
 
   readonly inviteStatusText = computed(() => {
-    const counts = this.expectedInviteCounts();
+    const { min, max } = this.inviteRange();
     const current = this.inviteCount();
-    if (counts.length === 0) return '';
-    if (counts.length === 1) return `${current} of ${counts[0]} selected`;
-    return `${current} selected — needs ${counts.join(' or ')}`;
+    if (max === 0) return '';
+    const range = min === max ? `${min}` : `${min}–${max}`;
+    return `${current} selected — needs ${range}`;
   });
 
   readonly totalPrice = computed(() => {
@@ -125,7 +130,7 @@ export class CreateBookingComponent {
   });
 
   readonly friendsShortBy = computed(() => {
-    const need = this.maxInvites();
+    const need = this.minInvites();
     if (need === 0) return 0;
     return Math.max(0, need - this.friends().length);
   });
@@ -233,7 +238,7 @@ export class CreateBookingComponent {
         detail: 'Invites have been sent to your friends.',
       });
 
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/bookings']);
     } finally {
       this.submitting.set(false);
     }

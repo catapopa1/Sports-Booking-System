@@ -42,8 +42,16 @@ export const routes: Routes = [
         loadComponent: () => import('./features/users/user-profile-view/user-profile-view').then(m => m.UserProfileViewComponent)
       },
       {
+        path: 'bookings',
+        loadComponent: () => import('./features/bookings/my-bookings/my-bookings').then(m => m.MyBookingsComponent)
+      },
+      {
         path: 'bookings/create/:fieldId',
         loadComponent: () => import('./features/bookings/create-booking/create-booking').then(m => m.CreateBookingComponent)
+      },
+      {
+        path: 'bookings/:id',
+        loadComponent: () => import('./features/bookings/booking-detail/booking-detail').then(m => m.BookingDetailComponent)
       },
       {
         path: 'palettes',

@@ -1,0 +1,55 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>My bookings</h1>
+      <p class="subtitle">Every game you've organised, in one place.</p>
+    </div>
+    <p-button label="New booking" icon="pi pi-plus" routerLink="/parks" />
+  </header>
+
+  @if (loading() && items().length === 0) {
+    <div class="grid">
+      @for (_ of [1,2,3,4]; track $index) {
+        <p-skeleton height="6.5rem" styleClass="skel" />
+      }
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty-state">
+      <i class="pi pi-calendar-plus"></i>
+      <h2>No bookings yet</h2>
+      <p>Pick a park, choose a field, and invite friends to your first game.</p>
+      <p-button label="Browse parks" icon="pi pi-map" routerLink="/parks" />
+    </div>
+  } @else {
+    <div class="grid">
+      @for (b of items(); track b.id) {
+        <a class="booking-card" [routerLink]="['/bookings', b.id]">
+          <div class="card-main">
+            <div class="card-title">
+              <h3>{{ b.fieldName }}</h3>
+              <span class="park-name">{{ b.parkName }}</span>
+            </div>
+            <app-status-chip [status]="b.status" />
+          </div>
+          <div class="card-meta">
+            <span class="when">
+              <i class="pi pi-calendar"></i>
+              {{ b.startTime | date:'EEE, d MMM · HH:mm' }}
+            </span>
+            <span class="price">{{ b.totalPrice | currency:'RON':'symbol-narrow':'1.0-0' }}</span>
+          </div>
+        </a>
+      }
+    </div>
+
+    @if (totalCount() > pageSize()) {
+      <p-paginator
+        [first]="first()"
+        [rows]="pageSize()"
+        [totalRecords]="totalCount()"
+        [rowsPerPageOptions]="[10, 20, 50]"
+        (onPageChange)="onPageChange($event)"
+      />
+    }
+  }
+</section>

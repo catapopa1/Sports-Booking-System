@@ -1,0 +1,88 @@
+<section class="page">
+  <a class="back-link" routerLink="/bookings">
+    <i class="pi pi-arrow-left"></i> Back to my bookings
+  </a>
+
+  @if (loading()) {
+    <div class="skeleton-stack">
+      <p-skeleton height="3rem" width="60%" styleClass="skel" />
+      <p-skeleton height="9rem" styleClass="skel" />
+      <p-skeleton height="14rem" styleClass="skel" />
+    </div>
+  } @else if (loadError() || !booking()) {
+    <div class="empty-state">
+      <i class="pi pi-exclamation-triangle"></i>
+      <h2>Booking unavailable</h2>
+      <p>We couldn't load this booking. It may have been removed, or you don't have access to it.</p>
+      <p-button label="Back to my bookings" icon="pi pi-arrow-left" routerLink="/bookings" />
+    </div>
+  } @else if (booking(); as b) {
+    <header class="detail-header">
+      <div class="header-left">
+        <h1>{{ b.fieldName }}</h1>
+        <p class="park-line">
+          <i class="pi pi-map-marker"></i>
+          {{ b.parkName }}
+        </p>
+      </div>
+      <app-status-chip [status]="b.status" />
+    </header>
+
+    <div class="meta-grid">
+      <div class="meta-card">
+        <span class="meta-label">When</span>
+        <span class="meta-value">{{ b.startTime | date:'EEEE, d MMMM' }}</span>
+        <span class="meta-sub">{{ b.startTime | date:'HH:mm' }} · 1 hour</span>
+      </div>
+      <div class="meta-card">
+        <span class="meta-label">Booking type</span>
+        <span class="meta-value">{{ b.bookingType }}</span>
+        <span class="meta-sub">{{ b.requiredPlayerCount }} player{{ b.requiredPlayerCount === 1 ? '' : 's' }} total</span>
+      </div>
+      <div class="meta-card">
+        <span class="meta-label">Total price</span>
+        <span class="meta-value">{{ b.totalPrice | currency:'RON':'symbol-narrow':'1.0-0' }}</span>
+        @if (b.bookingType === 'HalfCourt') {
+          <span class="meta-sub">75% half-court rate</span>
+        }
+      </div>
+    </div>
+
+    <section class="invites-section">
+      <div class="invites-header">
+        <h2>Invites</h2>
+        <span class="invites-tally">
+          {{ acceptedInvites() }} of {{ b.invites.length }} accepted
+        </span>
+      </div>
+
+      @if (b.invites.length === 0) {
+        <p class="muted">No invites on this booking.</p>
+      } @else {
+        <ul class="invites-list">
+          @for (inv of b.invites; track inv.playerId) {
+            <li class="invite-row">
+              <span class="player-name">{{ inv.playerName }}</span>
+              <app-status-chip [status]="inv.status" />
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    @if (canCancel()) {
+      <footer class="detail-actions">
+        <p-button
+          label="Cancel booking"
+          icon="pi pi-times"
+          severity="danger"
+          [outlined]="true"
+          [loading]="cancelling()"
+          (onClick)="promptCancel()"
+        />
+      </footer>
+    }
+  }
+
+  <p-confirmDialog />
+</section>
