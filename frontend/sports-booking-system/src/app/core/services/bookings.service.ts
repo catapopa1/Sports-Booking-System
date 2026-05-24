@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
@@ -15,6 +15,22 @@ import { PagedResult } from '../models/pagination.models';
 export class BookingsService {
   private readonly http = inject(HttpClient);
   private readonly base = `${environment.apiBaseUrl}/api/Bookings`;
+
+  private readonly _pendingInvitesCount = signal(0);
+  readonly pendingInvitesCount = this._pendingInvitesCount.asReadonly();
+
+  async refreshInvitesCount(): Promise<void> {
+    try {
+      const invites = await this.getMyInvites();
+      this._pendingInvitesCount.set(invites.length);
+    } catch {
+      this._pendingInvitesCount.set(0);
+    }
+  }
+
+  clearInvitesCount(): void {
+    this._pendingInvitesCount.set(0);
+  }
 
   create(request: CreateBookingRequest): Promise<{ id: number }> {
     return firstValueFrom(this.http.post<{ id: number }>(this.base, request));

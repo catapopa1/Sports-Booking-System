@@ -4,6 +4,7 @@ import { AvatarModule } from 'primeng/avatar';
 import { TooltipModule } from 'primeng/tooltip';
 import { environment } from '../../../environments/environment';
 import { AuthService } from '../../core/services/auth.service';
+import { BookingsService } from '../../core/services/bookings.service';
 import { ThemeService } from '../../core/services/theme.service';
 import { UsersService } from '../../core/services/users.service';
 
@@ -24,6 +25,7 @@ interface NavItem {
 export class SidebarComponent {
   readonly auth = inject(AuthService);
   readonly theme = inject(ThemeService);
+  readonly bookings = inject(BookingsService);
   private readonly usersService = inject(UsersService);
   readonly collapsed = signal(false);
 
@@ -56,6 +58,7 @@ export class SidebarComponent {
     { label: 'Dashboard',     icon: 'pi pi-home',     route: '/dashboard' },
     { label: 'Parks',         icon: 'pi pi-map',      route: '/parks' },
     { label: 'Bookings',      icon: 'pi pi-calendar', route: '/bookings' },
+    { label: 'Invites',       icon: 'pi pi-envelope', route: '/invites' },
     { label: 'Friends',       icon: 'pi pi-users',    route: '/friends' },
     { label: 'Notifications', icon: 'pi pi-bell',     route: '/notifications' },
     { label: 'Admin',         icon: 'pi pi-shield',   route: '/admin', roles: ['Admin'] },
@@ -67,7 +70,7 @@ export class SidebarComponent {
   });
 
   constructor() {
-    // Load profile picture whenever the user becomes logged in.
+    // Load profile picture + pending-invite count whenever the user becomes logged in.
     effect(() => {
       const user = this.auth.user();
       if (user) {
@@ -80,9 +83,11 @@ export class SidebarComponent {
             this.profilePictureUrl.set(null);
             this.fullName.set(null);
           });
+        this.bookings.refreshInvitesCount();
       } else {
         this.profilePictureUrl.set(null);
         this.fullName.set(null);
+        this.bookings.clearInvitesCount();
       }
     });
   }

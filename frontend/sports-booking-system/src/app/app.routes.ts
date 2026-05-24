@@ -46,6 +46,10 @@ export const routes: Routes = [
         loadComponent: () => import('./features/bookings/my-bookings/my-bookings').then(m => m.MyBookingsComponent)
       },
       {
+        path: 'invites',
+        loadComponent: () => import('./features/bookings/invites/invites').then(m => m.InvitesComponent)
+      },
+      {
         path: 'bookings/create/:fieldId',
         loadComponent: () => import('./features/bookings/create-booking/create-booking').then(m => m.CreateBookingComponent)
       },

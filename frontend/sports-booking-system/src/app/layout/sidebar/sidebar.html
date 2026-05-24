@@ -40,7 +40,14 @@
         tooltipPosition="right">
         <i [class]="item.icon"></i>
         @if (!collapsed()) {
-          <span>{{ item.label }}</span>
+          <span class="nav-label">{{ item.label }}</span>
+        }
+        @if (item.route === '/invites' && bookings.pendingInvitesCount() > 0) {
+          @if (collapsed()) {
+            <span class="nav-dot" aria-hidden="true"></span>
+          } @else {
+            <span class="nav-badge">{{ bookings.pendingInvitesCount() }}</span>
+          }
         }
       </a>
     }

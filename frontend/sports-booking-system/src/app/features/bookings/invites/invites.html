@@ -1,0 +1,67 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Invites</h1>
+      <p class="subtitle">Friends have asked you to join their games. Accept or decline below.</p>
+    </div>
+  </header>
+
+  @if (loading() && invites().length === 0) {
+    <div class="grid">
+      @for (_ of [1, 2, 3]; track $index) {
+        <p-skeleton height="7rem" styleClass="skel" />
+      }
+    </div>
+  } @else if (isEmpty()) {
+    <div class="empty-state">
+      <i class="pi pi-envelope"></i>
+      <h2>You're all caught up</h2>
+      <p>No pending invites. When a friend invites you to play, you'll see it here.</p>
+      <p-button label="Browse parks" icon="pi pi-map" routerLink="/parks" />
+    </div>
+  } @else {
+    <ul class="grid">
+      @for (inv of invites(); track inv.bookingId) {
+        <li class="invite-card">
+          <a class="invite-main" [routerLink]="['/bookings', inv.bookingId]">
+            <div class="invite-title">
+              <h3>{{ inv.fieldName }}</h3>
+              <span class="park-name">
+                <i class="pi pi-map-marker"></i>
+                {{ inv.parkName }}
+              </span>
+            </div>
+            <div class="invite-meta">
+              <span class="organizer">
+                <i class="pi pi-user"></i>
+                Invited by <strong>{{ inv.organizerName }}</strong>
+              </span>
+              <span class="when">
+                <i class="pi pi-calendar"></i>
+                {{ inv.startTime | date:'EEE, d MMM · HH:mm' }}
+              </span>
+            </div>
+          </a>
+
+          <div class="invite-actions">
+            <p-button
+              label="Decline"
+              icon="pi pi-times"
+              severity="danger"
+              [outlined]="true"
+              [loading]="isResponding(inv.bookingId)"
+              (onClick)="respond(inv.bookingId, 'Declined')"
+            />
+            <p-button
+              label="Accept"
+              icon="pi pi-check"
+              severity="success"
+              [loading]="isResponding(inv.bookingId)"
+              (onClick)="respond(inv.bookingId, 'Accepted')"
+            />
+          </div>
+        </li>
+      }
+    </ul>
+  }
+</section>
