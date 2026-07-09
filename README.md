@@ -2,9 +2,7 @@
 
 A multi-sport court booking platform where players can find parks, book courts, and invite friends to play together. Park managers review and approve bookings, while admins manage the overall platform.
 
-> **Status:** Backend API complete. Angular frontend coming soon.
-
----
+> **Status:** Completed
 
 ## What it does
 
